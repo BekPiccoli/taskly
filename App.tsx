@@ -25,7 +25,7 @@ export default function App() {
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">
       <Image
-        source={require("./assets/taskly_logo.png")}
+        source={require("./src/assets/taskly_logo.png")}
         className="w-28 h-28 mb-4"
         resizeMode="contain"
         accessibilityLabel="Logo Taskly"
