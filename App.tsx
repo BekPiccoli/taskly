@@ -1,3 +1,4 @@
+// @ts-ignore
 import "./global.css";
 import { useState } from "react";
 import {
@@ -18,7 +19,6 @@ export default function App() {
       Alert.alert("Erro", "Preencha todos os campos.");
       return;
     }
-    // Aqui você pode adicionar lógica de autenticação
     Alert.alert("Login", `Bem-vindo, ${email}!`);
   };
 
