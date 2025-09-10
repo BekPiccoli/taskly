@@ -1,22 +1,27 @@
-// @ts-ignore
-import "./global.css";
 import { useState } from "react";
 import { Text, View, Alert, useColorScheme } from "react-native";
-import EmailInput from "@components/inputs/email";
+import { EmailInput } from "@components/inputs/email";
 import { PasswordInput } from "@components/inputs/password";
 import Button from "@components/buttons/button";
 import LogoTaskly from "@components/logo";
 
-export default function App() {
+const Singin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = () => {
-    if (!email || !password) {
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSingin = () => {
+    if (!email || !password || !confirmPassword) {
       Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
     Alert.alert("Login", `Bem-vindo, ${email}!`);
   };
+
   const theme = useColorScheme();
   console.log(theme);
 
@@ -35,8 +40,17 @@ export default function App() {
         Taskly
       </Text>
       <EmailInput email={email} setEmail={setEmail} />
-      <PasswordInput password={password} setPassword={setPassword} />
-      <Button onPress={handleLogin} title="Entrar" />
+      <PasswordInput
+        password={password}
+        setPassword={setPassword}
+        placeholder="Senha"
+      />
+      <PasswordInput
+        password={confirmPassword}
+        setPassword={setConfirmPassword}
+        placeholder="Confirmar senha"
+      />
+      <Button onPress={handleSingin} title="Entrar" />
 
       <View className="flex direction-row gap-4 mt-4 w-10/12 items-center">
         <Text
@@ -59,4 +73,5 @@ export default function App() {
       </View>
     </View>
   );
-}
+};
+export { Singin };

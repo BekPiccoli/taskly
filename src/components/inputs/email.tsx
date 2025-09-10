@@ -1,11 +1,16 @@
 import { TextInput } from "react-native";
-export default function EmailInput({
+interface EmailInputProps {
+  email: string;
+  setEmail: (email: string) => void;
+}
+
+const EmailInput: React.FC<EmailInputProps> = ({
   email,
   setEmail,
 }: {
   email: string;
   setEmail: (email: string) => void;
-}) {
+}) => {
   return (
     <TextInput
       className="w-full h-12 px-4 mb-4 border rounded-lg text-base bg-[#F3F6FF] color-[#233A6A] border-[#233A6A]"
@@ -17,4 +22,5 @@ export default function EmailInput({
       autoCapitalize="none"
     />
   );
-}
+};
+export { EmailInput };
