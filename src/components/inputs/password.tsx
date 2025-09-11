@@ -1,30 +1,49 @@
 import type React from "react";
-import { TextInput, Keyboard } from "react-native";
+import { TextInput, View } from "react-native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 interface PasswordInputProps {
   placeholder?: string;
+
   password: string;
   setPassword: (password: string) => void;
-  isKeyboardVisible?: boolean;
-  setIsKeyboardVisible?: (isKeyboardVisible: boolean) => boolean;
+
+  isPasswordVisible: boolean;
+  setIsPasswordVisible: (isPasswordVisible: boolean) => void;
 }
 
 const PasswordInput: React.FC<PasswordInputProps> = ({
-  isKeyboardVisible,
-  setIsKeyboardVisible,
+  isPasswordVisible,
+  setIsPasswordVisible,
+
   password,
   setPassword,
+
   placeholder,
 }) => {
+  const handlePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
   return (
-    <TextInput
-      className="w-full h-12 px-4 mb-4 border rounded-lg text-base bg-[#F3F6FF] color-[#233A6A] border-[#233A6A]"
-      placeholder={placeholder}
-      placeholderTextColor="#233A6A"
-      value={password}
-      onChangeText={setPassword}
-      onSubmitEditing={Keyboard.dismiss}
-      secureTextEntry
-    />
+    <>
+      <View className="relative w-full">
+        <TextInput
+          className="w-full h-12 px-4 mb-4 border rounded-lg text-base bg-[#F3F6FF] color-[#233A6A] border-[#233A6A] pr-10"
+          placeholder={placeholder}
+          placeholderTextColor="#233A6A"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!isPasswordVisible}
+        />
+        <View className="absolute right-3 top-3">
+          <FontAwesome
+            name={isPasswordVisible ? "eye" : "eye-slash"}
+            size={24}
+            color="black"
+            onPress={handlePasswordVisibility}
+          />
+        </View>
+      </View>
+    </>
   );
 };
 export { PasswordInput };

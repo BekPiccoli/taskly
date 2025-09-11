@@ -1,14 +1,23 @@
 import { useState } from "react";
-import { Text, View, Alert, useColorScheme } from "react-native";
-import { EmailInput } from "@components/inputs/email";
 import { PasswordInput } from "@components/inputs/password";
+import { EmailInput } from "@components/inputs/email";
 import Button from "@components/buttons/button";
 import LogoTaskly from "@components/logo";
+import {
+  Text,
+  View,
+  Alert,
+  useColorScheme,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
 
 const Singin: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const theme = useColorScheme();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const handleSingin = () => {
     if (!email || !password || !confirmPassword) {
@@ -22,56 +31,53 @@ const Singin: React.FC = () => {
     Alert.alert("Login", `Bem-vindo, ${email}!`);
   };
 
-  const theme = useColorScheme();
-  console.log(theme);
-
   return (
-    <View
-      className={`${
-        theme === "dark" ? "bg-gray-900" : "bg-white"
-      } flex-1 justify-center items-center px-6`}
+    <KeyboardAvoidingView
+      behavior="padding"
+      className="flex-1"
+      keyboardVerticalOffset={0}
     >
-      <LogoTaskly />
-      <Text
-        className={`${
-          theme === "dark" ? "color-white" : " color-[#233A6A]"
-        } text-2xl font-bold mb-8`}
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          display: "flex",
+          justifyContent: "center",
+        }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        Taskly
-      </Text>
-      <EmailInput email={email} setEmail={setEmail} />
-      <PasswordInput
-        password={password}
-        setPassword={setPassword}
-        placeholder="Senha"
-      />
-      <PasswordInput
-        password={confirmPassword}
-        setPassword={setConfirmPassword}
-        placeholder="Confirmar senha"
-      />
-      <Button onPress={handleSingin} title="Entrar" />
-
-      <View className="flex direction-row gap-4 mt-4 w-10/12 items-center">
-        <Text
-          className={`${theme === "dark" ? "text-white" : "text-[#233A6A]"}`}
+        <View
+          className={`${
+            theme === "dark" ? "bg-gray-900" : "bg-white"
+          } flex-1 justify-center items-center px-4 min-h-full`}
         >
-          Esqueceu sua senha?
-        </Text>
-        <Text
-          className={`${theme === "dark" ? "text-white" : "text-[#233A6A]"}  `}
-        >
-          Não possuí conta ainda?{" "}
+          <LogoTaskly />
           <Text
             className={`${
-              theme === "dark" ? "text-white" : "text-[#233A6A]"
-            } underline`}
+              theme === "dark" ? "color-white" : " color-[#233A6A]"
+            } text-2xl font-bold mb-8`}
           >
-            Cadastre-se!
+            Taskly
           </Text>
-        </Text>
-      </View>
-    </View>
+          <EmailInput email={email} setEmail={setEmail} />
+          <PasswordInput
+            password={password}
+            setPassword={setPassword}
+            placeholder="Senha"
+            isPasswordVisible={isPasswordVisible}
+            setIsPasswordVisible={setIsPasswordVisible}
+          />
+          <PasswordInput
+            password={confirmPassword}
+            setPassword={setConfirmPassword}
+            placeholder="Confirmar senha"
+            isPasswordVisible={isPasswordVisible}
+            setIsPasswordVisible={setIsPasswordVisible}
+          />
+          <Button onPress={handleSingin} title="Cadastrar-se" />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 export { Singin };
