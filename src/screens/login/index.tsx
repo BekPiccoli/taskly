@@ -3,18 +3,16 @@ import { PasswordInput } from "@components/inputs/password";
 import { useNavigation } from "@react-navigation/native";
 import { EmailInput } from "@components/inputs/email";
 import Button from "@components/buttons/button";
-import LogoTaskly from "@components/logo";
+import { LogoTaskly } from "@components/logo";
 import {
   Text,
   View,
   Alert,
-  useColorScheme,
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
 
 const Login: React.FC = () => {
-  const theme = useColorScheme();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -44,17 +42,9 @@ const Login: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View
-          className={`${
-            theme === "dark" ? "bg-gray-900" : "bg-white"
-          } flex-1  justify-center items-center px-4 pb-20`}
-        >
-          <LogoTaskly />
-          <Text
-            className={`${
-              theme === "dark" ? "color-white" : " color-[#233A6A]"
-            } text-2xl font-bold mb-8`}
-          >
+        <View className="bg-white flex-1  justify-center items-center px-4 pb-20 dark:bg-gray-900">
+          <LogoTaskly width={52} height={52} alt="Taskly Logo" />
+          <Text className="text-[#233A6A] text-2xl font-bold mb-8 dark:color-white">
             Taskly
           </Text>
           <EmailInput email={email} setEmail={setEmail} />
@@ -68,19 +58,13 @@ const Login: React.FC = () => {
           <Button onPress={handleLogin} title="Entrar" />
 
           <View className="flex direction-row gap-4 mt-4 w-10/12 items-center">
-            <Text
-              className={`${theme === "dark" ? "text-white" : "text-[#233A6A]"}`}
-            >
+            <Text className="text-[#233A6A] dark:text-white">
               Esqueceu sua senha?
             </Text>
-            <Text
-              className={`${theme === "dark" ? "text-white" : "text-[#233A6A]"}  `}
-            >
+            <Text className="text-[#233A6A] dark:text-white">
               Não possuí conta ainda?{" "}
               <Text
-                className={`${
-                  theme === "dark" ? "text-white" : "text-[#233A6A]"
-                } underline`}
+                className="text-[#233A6A] underline dark:text-white"
                 onPress={() => navigation.navigate("Singin" as never)}
               >
                 Cadastre-se!

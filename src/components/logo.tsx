@@ -1,11 +1,19 @@
 import { Image } from "react-native";
-export default function LogoTaskly() {
+
+interface LogoTasklyProps {
+  width: number;
+  height: number;
+  alt: string;
+}
+
+const LogoTaskly: React.FC<LogoTasklyProps> = ({ width, height, alt }) => {
   return (
     <Image
       source={require("../assets/taskly_logo.png")}
-      className="w-52 h-52"
+      style={{ width, height }}
       resizeMode="contain"
-      accessibilityLabel="Logo Taskly"
+      accessibilityLabel={alt}
     />
   );
-}
+};
+export { LogoTaskly };
