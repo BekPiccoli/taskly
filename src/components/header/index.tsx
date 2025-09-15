@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { LogoTaskly } from "@components/logo";
-import Button from "../buttons/button";
+import { Button } from "@components/buttons/button";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 const Header: React.FC = () => {
   return (
     <>
-      <View className="w-screen h-40 bg-slate-200 flex flex-row  items-center gap-2 dark:bg-gray-800">
+      <View className="w-screen h-40 bg-bgLight flex flex-row  items-center  justify-between gap-2 dark:bg-gray-950">
         <View className="flex flex-row items-center justify-center mt-6">
           <LogoTaskly width={100} height={100} alt="Taskly Logo" />
           <View className="">
@@ -17,6 +18,19 @@ const Header: React.FC = () => {
             </Text>
           </View>
         </View>
+        <Button
+          title="Adicionar Matéria"
+          onPress={() => {}}
+          style="rounded-lg flex flex-row items-center justify-center  mr-4 mt-8 p-2"
+          icon={
+            <FontAwesome5
+              name="plus"
+              size={12}
+              color="white"
+              className="mr-2"
+            />
+          }
+        />
       </View>
     </>
   );

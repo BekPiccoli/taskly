@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PasswordInput } from "@components/inputs/password";
 import { EmailInput } from "@components/inputs/email";
-import Button from "@components/buttons/button";
+import { Button } from "@components/buttons/button";
 import { LogoTaskly } from "@components/logo";
 import {
   Text,
@@ -45,7 +45,7 @@ const Singin: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <View className="bg-white flex-1 justify-center items-center px-4 min-h-full dark:bg-gray-900">
-          <LogoTaskly width={52} height={52} alt="Taskly Logo" />
+          <LogoTaskly width={200} height={200} alt="Taskly Logo" />
           <Text className="text-[#233A6A] text-2xl font-bold mb-8 dark:color-white">
             Taskly
           </Text>
@@ -64,7 +64,11 @@ const Singin: React.FC = () => {
             isPasswordVisible={isPasswordVisible}
             setIsPasswordVisible={setIsPasswordVisible}
           />
-          <Button onPress={handleSingin} title="Cadastrar-se" />
+          <Button
+            onPress={handleSingin}
+            title="Cadastrar-se"
+            style="w-full h-12 rounded-lg flex items-center justify-center bg-[#4F5DFF]"
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

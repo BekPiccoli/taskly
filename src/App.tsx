@@ -8,10 +8,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 const App: React.FC = () => {
+  const isAutenticated = false;
   function RootStack() {
     return (
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName={isAutenticated ? "Home" : "Login"}
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Login" component={Login} />
