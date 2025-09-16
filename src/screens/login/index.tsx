@@ -42,7 +42,7 @@ const Login: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View className="bg-white flex-1  justify-center items-center px-4 pb-20 dark:bg-gray-900">
+        <View className="bg-blue-50 flex-1  justify-center items-center px-4 pb-20 dark:bg-gray-900">
           <LogoTaskly width={200} height={200} alt="Taskly Logo" />
           <Text className="text-[#233A6A] text-2xl font-bold mb-8 dark:color-white">
             Taskly
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
           <Button
             onPress={handleLogin}
             title="Entrar"
-            style="w-full h-12 rounded-lg flex items-center justify-center bg-[#4F5DFF]"
+            style="w-full h-12 rounded-lg flex items-center justify-center"
           />
 
           <View className="flex direction-row gap-4 mt-4 w-10/12 items-center">

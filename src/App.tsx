@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 const App: React.FC = () => {
-  const isAutenticated = false;
+  const isAutenticated = true;
   function RootStack() {
     return (
       <Stack.Navigator

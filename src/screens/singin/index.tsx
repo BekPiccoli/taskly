@@ -44,7 +44,7 @@ const Singin: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View className="bg-white flex-1 justify-center items-center px-4 min-h-full dark:bg-gray-900">
+        <View className="bg-blue-50 flex-1 justify-center items-center px-4 min-h-full dark:bg-gray-900">
           <LogoTaskly width={200} height={200} alt="Taskly Logo" />
           <Text className="text-[#233A6A] text-2xl font-bold mb-8 dark:color-white">
             Taskly
@@ -67,7 +67,7 @@ const Singin: React.FC = () => {
           <Button
             onPress={handleSingin}
             title="Cadastrar-se"
-            style="w-full h-12 rounded-lg flex items-center justify-center bg-[#4F5DFF]"
+            style="w-full h-12 rounded-lg flex items-center justify-center"
           />
         </View>
       </ScrollView>

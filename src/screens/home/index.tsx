@@ -8,7 +8,7 @@ const Home: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
   return (
-    <View className="flex-1 items-center dark:bg-gray-900">
+    <View className="flex-1 items-center bg-blue-50 dark:bg-gray-900">
       <View>
         <Header />
       </View>
@@ -16,7 +16,10 @@ const Home: React.FC = () => {
         <Text className="text-xl font-extrabold dark:text-white">
           Your subjects
         </Text>
-        <View className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow dark:bg-black">
+        <View
+          className="h-28 w-full bg-slate-50 shadow-lg shadow-slate-300  mt-4 rounded-lg 
+         dark:bg-black dark:shadow-lg  dark:shadow-slate-800"
+        >
           <View className="p-6 flex flex-row">
             <MaterialIcons
               name="menu-book"
@@ -31,12 +34,15 @@ const Home: React.FC = () => {
           </View>
         </View>
 
-        <View className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow dark:bg-black">
+        <View
+          className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow-lg shadow-slate-300
+         dark:bg-black dark:shadow-lg  dark:shadow-slate-800"
+        >
           <View className="p-6 flex flex-row">
             <FontAwesome6
               name="user-graduate"
               size={24}
-              color="#BE89E0"
+              color={`${isDarkMode ? "#A3418F" : "#BE89E0"}`}
               className="mr-2 p-2 rounded-lg bg-purple-100"
             />
             <View className="ml-2">
@@ -46,12 +52,15 @@ const Home: React.FC = () => {
           </View>
         </View>
 
-        <View className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow dark:bg-black">
+        <View
+          className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow-lg shadow-slate-300
+         dark:bg-black dark:shadow-lg  dark:shadow-slate-800"
+        >
           <View className="p-6 flex flex-row">
             <FontAwesome5
               name="chalkboard-teacher"
               size={24}
-              color="#5AE06D"
+              color={`${isDarkMode ? "#3C803F" : "#5AE06D"}`}
               className="mr-2 p-2 rounded-lg bg-green-100"
             />
             <View className="ml-2">

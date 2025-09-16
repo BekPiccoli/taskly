@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
 interface ButtonProps {
   onPress: () => void;
-  title: string;
+  title?: string;
   style?: string;
   icon?: React.ReactNode;
 }
@@ -12,14 +12,19 @@ const Button: React.FC<ButtonProps> = ({
   icon,
 }: {
   onPress: () => void;
-  title: string;
+  title?: string;
   style?: string;
   icon?: React.ReactNode;
 }) => {
   return (
-    <TouchableOpacity className={` ${style} bg-[#4F5DFF]`} onPress={onPress}>
+    <TouchableOpacity
+      className={` ${style} bg-[#4F5DFF]  shadow-lg shadow-slate-400 dark:shadow-lg dark:shadow-slate-700`}
+      onPress={onPress}
+    >
       {icon && <View>{icon}</View>}
-      <Text className="text-white text-base font-semibold">{title}</Text>
+      {title && (
+        <Text className="text-white text-base font-semibold">{title}</Text>
+      )}
     </TouchableOpacity>
   );
 };
