@@ -4,9 +4,17 @@ import { LogoTaskly } from "@components/logo";
 import { Button } from "@components/buttons/button";
 import { SubjectModal } from "@screens/newSubject";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+interface HeaderProps {
+  subjectsFromModal: (data: object) => void;
+}
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ subjectsFromModal }) => {
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
+
+  const handleSaveSubject = (subjectData: object) => {
+    subjectsFromModal(subjectData);
+  };
+
   return (
     <>
       <View
@@ -32,7 +40,11 @@ const Header: React.FC = () => {
         />
       </View>
       {modalIsOpen && (
-        <SubjectModal modalIsOpen={true} setModalIsOpen={setModalIsOpen} />
+        <SubjectModal
+          modalIsOpen={true}
+          setModalIsOpen={setModalIsOpen}
+          onSaveSubject={handleSaveSubject}
+        />
       )}
     </>
   );

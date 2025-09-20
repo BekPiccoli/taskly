@@ -10,7 +10,6 @@ interface SubjectInputProps {
 }
 
 interface SubjectColorPickerProps {
-  isColorSelected?: Boolean;
   colorSelected: string;
 }
 
@@ -31,7 +30,7 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
     <View className="w-full flex flex-col items-center">
       <View className="w-full flex flex-col items-center justify-start ">
         <View className="w-full flex flex-col ml-36 justify-center p-2">
-          <Text className="italic">{title} *</Text>
+          <Text className="italic dark:text-white">{title} *</Text>
         </View>
         <Controller
           control={control}
@@ -39,9 +38,10 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
           rules={{ required: required }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className="h-12 w-3/4 bg-white rounded-lg p-4 border"
+              className="h-12 w-3/4 text-base bg-white rounded-lg p-4 border border-[#233A6A]"
               value={value}
               placeholder={placeholder}
+              placeholderTextColor="#6B7280"
               onChangeText={onChange}
             />
           )}
@@ -52,28 +52,16 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
 };
 
 const SubjectColorPicker: React.FC<SubjectColorPickerProps> = ({
-  isColorSelected,
   colorSelected,
-  control,
-  name,
 }: {
-  isColorSelected?: Boolean;
   colorSelected: string;
-  control: any;
-  name: string;
 }) => {
   return (
     <View className="flex flex-row items-center gap-2 mt-4">
-      <Text>Cor selecionada:</Text>
-      <Controller
-        control={control}
-        name={name}
-        rules={{ required: "Color is required" }}
-        render={({ field: { onChange, value } }) => (
-          <View
-            className={`w-8 h-8 rounded-lg border-2 border-black bg-[${colorSelected}]`}
-          />
-        )}
+      <Text className="dark:text-white">Cor selecionada:</Text>
+      <View
+        className={`w-8 h-8 rounded-lg`}
+        style={{ backgroundColor: colorSelected }}
       />
     </View>
   );
