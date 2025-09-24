@@ -39,28 +39,28 @@ const SubjectModal: React.FC<subjectModalProps> = ({
   const isDarkMode = useColorScheme() === "dark";
   const inputData = [
     {
-      title: "Subject Name",
-      required: "Subject name is required",
+      title: "Matéria",
+      required: "Matéria é obrigatória",
       name: "subjectName",
-      placeholder: "Enter subject name",
+      placeholder: "Digite o nome da matéria",
     },
     {
-      title: "Teacher Name",
-      required: "Teacher name is required",
+      title: "Nome do Professor",
+      required: "Nome do professor é obrigatório",
       name: "teacherName",
-      placeholder: "Enter teacher name",
+      placeholder: "Digite o nome do professor",
     },
     {
-      title: "Room Number",
-      required: "Room number is required",
-      name: "roomNumber",
-      placeholder: "Enter room number",
+      title: "Período da Faculdade",
+      required: "Período da faculdade é obrigatório",
+      name: "collegePeriod",
+      placeholder: "Digite o período da faculdade",
     },
     {
-      title: "Class Time",
-      required: "Class time is required",
+      title: "Créditos da Matéria",
+      required: "Número de créditos é obrigatório",
       name: "classTime",
-      placeholder: "Enter class time",
+      placeholder: "Digite o número de créditos",
     },
   ];
 
@@ -136,9 +136,7 @@ const SubjectModal: React.FC<subjectModalProps> = ({
                     size={24}
                     color={isDarkMode ? "white" : "black"}
                   />
-                  <Text className="italic dark:text-white ">
-                    Subject Color *
-                  </Text>
+                  <Text className="italic dark:text-white ">Color *</Text>
                 </View>
 
                 <View className="w-4/6 flex flex-row flex-wrap gap-2">

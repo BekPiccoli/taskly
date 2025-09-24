@@ -38,7 +38,7 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
           rules={{ required: required }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className="h-12 w-3/4 text-base bg-white rounded-lg p-4 border border-[#233A6A]"
+              className="h-14 w-3/4 bg-white rounded-lg p-4 border border-[#233A6A]"
               value={value}
               placeholder={placeholder}
               placeholderTextColor="#6B7280"
