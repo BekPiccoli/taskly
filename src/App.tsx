@@ -5,10 +5,11 @@ import { Singin } from "@screens/singin";
 import { Home } from "@screens/home";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+// ...outros imports...
 const Stack = createNativeStackNavigator();
 const App: React.FC = () => {
-  const isAutenticated = true;
+  const isAutenticated = false;
   function RootStack() {
     return (
       <Stack.Navigator

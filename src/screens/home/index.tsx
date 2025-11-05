@@ -1,8 +1,10 @@
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { ScrollView, Text, View, useColorScheme } from "react-native";
-import React, { useEffect, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SubjectModal } from "@screens/newSubject";
 import { Button } from "@src/components/buttons/button";
 import { Header } from "@src/components/header";
+import BottomSheet from "@gorhom/bottom-sheet";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -16,17 +18,25 @@ const Home: React.FC = () => {
   const [simulaBanco, setSimulaBanco] = useState<any>([]);
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
   const [subjects, setSubjects] = useState<JSON[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
+  const [loading, setLoading] = useState<Boolean>(false);
+  const [subjectConfigModalIsOpen, setSubjectConfigModalIsOpen] =
+    useState<Boolean>(false);
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
+  const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
 
   useEffect(() => {
     loadSubjects();
   }, [subjects, simulaBanco]);
 
+  const openConfigForSubject = () => {
+    setSubjectConfigModalIsOpen(true);
+  };
+
   const handleremoveSubject = () => {
-    AsyncStorage.removeItem("subjects");
-    setSimulaBanco([]);
+    openConfigForSubject();
+    // AsyncStorage.removeItem("subjects");
+    // setSimulaBanco([]);
   };
 
   const saveSubjects = async (subjectsToSave: Array<JSON>) => {
@@ -254,6 +264,44 @@ const Home: React.FC = () => {
             </View>
           </ScrollView>
         </View>
+      )}
+      {subjectConfigModalIsOpen && (
+        <GestureHandlerRootView>
+          <View className="flex-1 justify-center items-center p-4">
+            <Text className="text-lg font-semibold mb-4 dark:text-white">
+              Configurações da Matéria
+            </Text>
+
+            <View className="w-full gap-4">
+              <Button
+                onPress={() => {
+                  console.log("Editar matéria");
+                }}
+                title="Editar Matéria"
+                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-blue-500"
+                icon={<FontAwesome name="edit" size={16} color="#fff" />}
+              />
+
+              <Button
+                onPress={() => {
+                  console.log("Remover matéria");
+                }}
+                title="Remover Matéria"
+                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-red-500"
+                icon={<FontAwesome name="trash" size={16} color="#fff" />}
+              />
+
+              <Button
+                onPress={() => {
+                  console.log("Fechar");
+                }}
+                title="Cancelar"
+                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-gray-500"
+                icon={<FontAwesome name="close" size={16} color="#fff" />}
+              />
+            </View>
+          </View>
+        </GestureHandlerRootView>
       )}
     </>
   );
