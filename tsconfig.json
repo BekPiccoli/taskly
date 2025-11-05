@@ -25,6 +25,7 @@
       "@services/*": ["src/services/*"],
       "@navigation/*": ["src/navigation/*"],
       "@config/*": ["src/config/*"],
+      "@contexts/*": ["src/contexts/*"],
       "test/*": ["test/*"],
       "underscore": ["lodash"]
     }

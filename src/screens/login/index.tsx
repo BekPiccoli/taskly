@@ -69,7 +69,7 @@ const Login: React.FC = () => {
               Não possuí conta ainda?{" "}
               <Text
                 className="text-[#233A6A] underline dark:text-white"
-                onPress={() => navigation.navigate("Singin" as never)}
+                onPress={() => navigation.navigate("Signup" as never)}
               >
                 Cadastre-se!
               </Text>

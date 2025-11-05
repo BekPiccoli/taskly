@@ -1,3 +1,5 @@
+import { type NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { PasswordInput } from "@components/inputs/password";
 import { EmailInput } from "@components/inputs/email";
@@ -10,23 +12,35 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
+import { useAuth } from "@contexts/authContext";
 
-const Singin: React.FC = () => {
+const Signup: React.FC = () => {
   const [email, setEmail] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-
-  const handleSingin = () => {
+  const { login } = useAuth();
+  const handleSignup = async () => {
+    setLoading(true);
     if (!email || !password || !confirmPassword) {
       Alert.alert("Erro", "Preencha todos os campos.");
+      setLoading(false);
       return;
     }
     if (password !== confirmPassword) {
       Alert.alert("Erro", "As senhas não coincidem.");
+      setLoading(false);
       return;
     }
-    Alert.alert("Login", `Bem-vindo, ${email}!`);
+    try {
+      login(email, password);
+
+      setLoading(false);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível realizar o cadastro.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,7 +79,7 @@ const Singin: React.FC = () => {
             setIsPasswordVisible={setIsPasswordVisible}
           />
           <Button
-            onPress={handleSingin}
+            onPress={handleSignup}
             title="Cadastrar-se"
             style="w-full h-12 rounded-lg flex items-center justify-center"
           />
@@ -74,4 +88,4 @@ const Singin: React.FC = () => {
     </KeyboardAvoidingView>
   );
 };
-export { Singin };
+export { Signup };
