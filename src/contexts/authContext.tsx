@@ -1,27 +1,27 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import axios from "axios";
-import { Alert } from "react-native";
+
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const taskly_api = process.env.TASKLY_FIREBASE_API;
+// const taskly_api = process.env.TASKLY_FIREBASE_API;
+const taskly_api = "http://localhost:3001";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const login = async (email: string, password: string) => {
+  const register = async (email: string, password: string) => {
+    console.log("signup in with:", email, password);
+    console.log("API URL:", taskly_api);
     const res = await axios.post(`${taskly_api}/signup`, {
       email,
       password,
     });
     console.log(res.data);
-    if (res.status === 201) {
-      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
-    }
     setIsAuthenticated(true);
   };
 
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

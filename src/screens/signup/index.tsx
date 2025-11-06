@@ -1,5 +1,6 @@
 import { type NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "@contexts/authContext";
 import { useState } from "react";
 import { PasswordInput } from "@components/inputs/password";
 import { EmailInput } from "@components/inputs/email";
@@ -12,7 +13,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import { useAuth } from "@contexts/authContext";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -20,7 +20,10 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-  const { login } = useAuth();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+
+  const { register } = useAuth();
+
   const handleSignup = async () => {
     setLoading(true);
     if (!email || !password || !confirmPassword) {
@@ -28,17 +31,21 @@ const Signup: React.FC = () => {
       setLoading(false);
       return;
     }
+
     if (password !== confirmPassword) {
       Alert.alert("Erro", "As senhas não coincidem.");
       setLoading(false);
       return;
     }
-    try {
-      login(email, password);
 
-      setLoading(false);
+    try {
+      console.log("Signing up with:", email, password);
+      await register(email, password).then(() => {
+        navigation.navigate("Home");
+      });
     } catch (error) {
       Alert.alert("Erro", "Não foi possível realizar o cadastro.");
+    } finally {
       setLoading(false);
     }
   };
@@ -79,6 +86,7 @@ const Signup: React.FC = () => {
             setIsPasswordVisible={setIsPasswordVisible}
           />
           <Button
+            loading={loading}
             onPress={handleSignup}
             title="Cadastrar-se"
             style="w-full h-12 rounded-lg flex items-center justify-center"
