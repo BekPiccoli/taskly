@@ -4,7 +4,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SubjectModal } from "@screens/newSubject";
 import { Button } from "@src/components/buttons/button";
 import { Header } from "@src/components/header";
-import BottomSheet from "@gorhom/bottom-sheet";
+
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -13,6 +14,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useAuth } from "@src/contexts/authContext";
 
 const Home: React.FC = () => {
   const [simulaBanco, setSimulaBanco] = useState<any>([]);
@@ -24,6 +26,7 @@ const Home: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
   const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
+  const { logout } = useAuth();
 
   useEffect(() => {
     loadSubjects();
@@ -77,37 +80,51 @@ const Home: React.FC = () => {
       {loading ? (
         <Text>Loading...</Text>
       ) : simulaBanco.length === 0 ? (
-        <View className=" flex-1 justify-center items-center w-screen h-40">
-          <Ionicons
-            name="book-outline"
-            size={100}
-            color="#4F5DFF"
-            className="p-4 bg-blue-100 rounded-lg mb-4 "
-          />
+        <>
+          <View className="flex-1 ">
+            <Button
+              onPress={() => {}}
+              style="absolute top-20 left-4 h-14 w-14 bg-blue-100 flex items-center justify-center rounded-lg dark:bg-gray-700 z-10"
+              icon={
+                <MaterialCommunityIcons name="logout" size={24} color="blue" />
+              }
+            >
+              {/* <View className="absolute top-20 left-4 h-14 w-14 bg-blue-200 flex items-center justify-center rounded-lg dark:bg-gray-700 z-10"></View> */}
+            </Button>
 
-          <View className="mb-4 items-center px-8">
-            <Text className="text-xl font-extrabold dark:text-white">
-              Nenhuma Matéria adicionada ainda!
-            </Text>
-            <Text className="text-center mt-2 dark:text-white">
-              Comece adicionando sua primeira matéria para acompanhar seu
-              progresso acadêmico e frequência.
-            </Text>
+            <View className="flex-1 justify-center items-center w-screen">
+              <Ionicons
+                name="book-outline"
+                size={100}
+                color="#4F5DFF"
+                className="p-4 bg-blue-100 rounded-lg mb-4"
+              />
+
+              <View className="mb-4 items-center px-8">
+                <Text className="text-xl font-extrabold dark:text-white">
+                  Nenhuma Matéria adicionada ainda!
+                </Text>
+                <Text className="text-center mt-2 dark:text-white">
+                  Comece adicionando sua primeira matéria para acompanhar seu
+                  progresso acadêmico e frequência.
+                </Text>
+              </View>
+
+              <Button
+                onPress={() => setModalIsOpen(true)}
+                style="h-14 w-auto rounded-lg items-center justify-center flex-row mt-10 pr-4 pl-4"
+                title="Adicionar Matéria"
+              />
+              {modalIsOpen && (
+                <SubjectModal
+                  modalIsOpen={true}
+                  setModalIsOpen={setModalIsOpen}
+                  onSaveSubject={handleSubjectsFromModal}
+                />
+              )}
+            </View>
           </View>
-
-          <Button
-            onPress={() => setModalIsOpen(true)}
-            style="h-14 w-auto rounded-lg items-center justify-center flex-row mt-10 pr-4 pl-4"
-            title="Adicionar Matéria"
-          />
-          {modalIsOpen && (
-            <SubjectModal
-              modalIsOpen={true}
-              setModalIsOpen={setModalIsOpen}
-              onSaveSubject={handleSubjectsFromModal}
-            />
-          )}
-        </View>
+        </>
       ) : (
         <View className="flex-1 items-center bg-blue-50 dark:bg-visible dark:bg-gray-900">
           <View>

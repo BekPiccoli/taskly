@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { EmailInput } from "@components/inputs/email";
 import { Button } from "@components/buttons/button";
 import { LogoTaskly } from "@components/logo";
+import { useAuth } from "@src/contexts/authContext";
 import {
   Text,
   View,
@@ -15,16 +16,31 @@ import {
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const navigation = useNavigation();
+  const { login } = useAuth();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setLoading(true);
     if (!email || !password) {
       Alert.alert("Erro", "Preencha todos os campos.");
+      setLoading(false);
       return;
     }
-    Alert.alert("Login", `Bem-vindo, ${email}!`);
-    navigation.navigate("Home" as never);
+
+    try {
+      await login(email, password).then(() => {
+        navigation.navigate("Home" as never);
+      });
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        "Não foi possível fazer login, verifique seu email ou senha"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +74,7 @@ const Login: React.FC = () => {
           <Button
             onPress={handleLogin}
             title="Entrar"
+            loading={loading}
             style="w-full h-12 rounded-lg flex items-center justify-center"
           />
 

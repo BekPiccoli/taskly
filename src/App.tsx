@@ -6,10 +6,15 @@ import { Home } from "@screens/home";
 import { AuthProvider, useAuth } from "@contexts/authContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect } from "react";
 
 const Stack = createNativeStackNavigator();
 const App: React.FC = () => {
   function RootStack() {
+    useEffect(() => {
+      useAuth().getIsAuthenticated();
+    }, []);
+
     const { isAuthenticated } = useAuth();
     return (
       <Stack.Navigator
