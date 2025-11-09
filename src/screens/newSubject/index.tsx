@@ -1,4 +1,15 @@
 import React, { useState } from "react"; // Corrigido: era "Reac"
+import { useForm } from "react-hook-form";
+import { Button } from "@components/buttons/button";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import {
+  SubjectInput,
+  SubjectColorPicker,
+  colors,
+} from "@components/inputs/subjects";
+
 import {
   View,
   Text,
@@ -7,18 +18,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   useColorScheme,
-  Platform,
 } from "react-native";
-import { useForm } from "react-hook-form";
-import { Button } from "@components/buttons/button";
-import {
-  SubjectInput,
-  SubjectColorPicker,
-  colors,
-} from "@components/inputs/subjects";
-import Fontisto from "@expo/vector-icons/Fontisto";
-import Ionicons from "@expo/vector-icons/Ionicons";
-
 interface subjectModalProps {
   modalIsOpen: Boolean;
   setModalIsOpen: (value: Boolean) => void;
@@ -71,6 +71,7 @@ const SubjectModal: React.FC<subjectModalProps> = ({
   };
 
   const handleSaveSubject = (data: any) => {
+    console.log("subjec data:", data);
     const subjectData = { ...data, color: colorSelected };
     onSaveSubject(subjectData);
     setModalIsOpen(false);

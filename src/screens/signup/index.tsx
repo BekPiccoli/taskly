@@ -6,6 +6,7 @@ import { PasswordInput } from "@components/inputs/password";
 import { EmailInput } from "@components/inputs/email";
 import { Button } from "@components/buttons/button";
 import { LogoTaskly } from "@components/logo";
+import { register } from "@src/functions/index";
 import {
   Text,
   View,
@@ -22,8 +23,6 @@ const Signup: React.FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
-  const { register } = useAuth();
-
   const handleSignup = async () => {
     setLoading(true);
     if (!email || !password || !confirmPassword) {
@@ -39,11 +38,11 @@ const Signup: React.FC = () => {
     }
 
     try {
-      console.log("Signing up with:", email, password);
       await register(email, password).then(() => {
         navigation.navigate("Home");
       });
     } catch (error) {
+      console.error(error);
       Alert.alert("Erro", "Não foi possível realizar o cadastro.");
     } finally {
       setLoading(false);
@@ -91,6 +90,15 @@ const Signup: React.FC = () => {
             title="Cadastrar-se"
             style="w-full h-12 rounded-lg flex items-center justify-center"
           />
+          <Text className="text-[#233A6A] mt-9 dark:text-white">
+            Já possui uma conta?{" "}
+            <Text
+              className="text-[#233A6A] underline dark:text-white"
+              onPress={() => navigation.navigate("Login" as never)}
+            >
+              Ir para tela de login
+            </Text>
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

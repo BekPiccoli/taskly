@@ -21,6 +21,8 @@ module.exports = function (api) {
             "@navigation": "./src/navigation",
             "@config": "./src/config",
             "@contexts": "./src/contexts",
+            "@asyncStorageData": "./src/asyncStorageData",
+            "@functions": "./src/functions",
           },
         },
       ],

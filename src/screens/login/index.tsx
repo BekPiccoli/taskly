@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { EmailInput } from "@components/inputs/email";
 import { Button } from "@components/buttons/button";
 import { LogoTaskly } from "@components/logo";
-import { useAuth } from "@src/contexts/authContext";
+import { login } from "@src/functions";
 import {
   Text,
   View,
@@ -19,7 +19,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const navigation = useNavigation();
-  const { login } = useAuth();
 
   const handleLogin = async () => {
     setLoading(true);
@@ -30,10 +29,10 @@ const Login: React.FC = () => {
     }
 
     try {
-      await login(email, password).then(() => {
-        navigation.navigate("Home" as never);
-      });
+      const res = await login(email, password);
+      navigation.navigate("Home" as never);
     } catch (error) {
+      console.log(error);
       Alert.alert(
         "Erro",
         "Não foi possível fazer login, verifique seu email ou senha"
@@ -80,15 +79,19 @@ const Login: React.FC = () => {
 
           <View className="flex direction-row gap-4 mt-4 w-10/12 items-center">
             <Text className="text-[#233A6A] dark:text-white">
-              Esqueceu sua senha?
-            </Text>
-            <Text className="text-[#233A6A] dark:text-white">
               Não possuí conta ainda?{" "}
               <Text
                 className="text-[#233A6A] underline dark:text-white"
                 onPress={() => navigation.navigate("Signup" as never)}
               >
                 Cadastre-se!
+              </Text>
+            </Text>
+            <Text className="text-[#233A6A] dark:text-white">
+              Esqueceu sua senha?{" "}
+              <Text className="text-[#233A6A] underline dark:text-white">
+                {" "}
+                Recuperar minha senha{" "}
               </Text>
             </Text>
           </View>

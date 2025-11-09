@@ -1,5 +1,8 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import { ScrollView, Text, View, useColorScheme } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ScrollView, Text, View, useColorScheme, Alert } from "react-native";
+import { logout, createSubjects, getSubjects } from "@functions/index";
+import { useNavigation } from "@react-navigation/native";
+import { getId } from "@src/asyncStorageData/index";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SubjectModal } from "@screens/newSubject";
 import { Button } from "@src/components/buttons/button";
@@ -14,7 +17,6 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useAuth } from "@src/contexts/authContext";
 
 const Home: React.FC = () => {
   const [simulaBanco, setSimulaBanco] = useState<any>([]);
@@ -23,10 +25,11 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState<Boolean>(false);
   const [subjectConfigModalIsOpen, setSubjectConfigModalIsOpen] =
     useState<Boolean>(false);
+
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const navigation = useNavigation();
   const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
-  const { logout } = useAuth();
+  const isDarkMode = colorScheme === "dark";
 
   useEffect(() => {
     loadSubjects();
@@ -42,26 +45,43 @@ const Home: React.FC = () => {
     // setSimulaBanco([]);
   };
 
-  const saveSubjects = async (subjectsToSave: Array<JSON>) => {
+  const handleLogout = async () => {
     try {
-      if (!subjectsToSave || subjectsToSave.length === 0) return;
-      await AsyncStorage.setItem("subjects", JSON.stringify(subjectsToSave));
-      console.log("Dados salvos com sucesso!");
+      await logout().then(() => {
+        navigation.navigate("Login" as never);
+      });
     } catch (error) {
-      console.error("Erro ao salvar dados:", error);
+      Alert.alert("Erro", "Não foi possível fazer logout.");
+    }
+  };
+
+  const saveSubjects = async (subjectsToSave: Array<object>) => {
+    console.log("Saving subjects:", subjectsToSave);
+    const subjectsToSend = subjectsToSave[0];
+
+    if (subjectsToSend === null || subjectsToSend === undefined) return;
+
+    const id = await getId();
+    if (!id) {
+      console.warn("No user id found; skipping creating subjects.");
+      return;
+    }
+    try {
+      await createSubjects(id, subjectsToSend);
+    } catch (error) {
+      console.error("Failed to create subjects:", error);
     }
   };
 
   const loadSubjects = async () => {
     try {
-      const storedSubjects = await AsyncStorage.getItem("subjects");
-      if (storedSubjects && storedSubjects !== null) {
-        const parsedSubjects = JSON.parse(storedSubjects);
-        const subjectsArray = Array.isArray(parsedSubjects)
-          ? parsedSubjects
-          : [parsedSubjects];
-        setSimulaBanco(subjectsArray);
-      }
+      const id = await getId();
+      if (!id) return;
+      const res = await getSubjects(id);
+      const newSubject = res.data.newSubject;
+      console.log("New Subject:", newSubject);
+      // const updatedSubjects = [...subjects, newSubject];
+      // setSubjects(updatedSubjects);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     } finally {
@@ -83,16 +103,14 @@ const Home: React.FC = () => {
         <>
           <View className="flex-1 ">
             <Button
-              onPress={() => {}}
-              style="absolute top-20 left-4 h-14 w-14 bg-blue-100 flex items-center justify-center rounded-lg dark:bg-gray-700 z-10"
+              onPress={handleLogout}
+              style="absolute top-20 left-4 h-14 w-14 bg-blue-100 flex items-center justify-center rounded-lg  z-10"
               icon={
                 <MaterialCommunityIcons name="logout" size={24} color="blue" />
               }
-            >
-              {/* <View className="absolute top-20 left-4 h-14 w-14 bg-blue-200 flex items-center justify-center rounded-lg dark:bg-gray-700 z-10"></View> */}
-            </Button>
+            ></Button>
 
-            <View className="flex-1 justify-center items-center w-screen">
+            <View className="flex-1 justify-center items-center w-screen dark:bg-gray-700">
               <Ionicons
                 name="book-outline"
                 size={100}
