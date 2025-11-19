@@ -1,12 +1,14 @@
 import { Text, View, TextInput } from "react-native";
 import { Controller } from "react-hook-form";
-
+import { type Subject } from "@src/functions/types";
 interface SubjectInputProps {
   title: string;
   control: any;
   required: string;
   placeholder: string;
   name: string;
+  value?: string;
+  numericType: boolean;
 }
 
 interface SubjectColorPickerProps {
@@ -19,12 +21,16 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
   required,
   placeholder,
   name,
+  value,
+  numericType,
 }: {
   title: string;
   control: any;
   required: string;
   placeholder: string;
   name: string;
+  value?: string;
+  numericType: boolean;
 }) => {
   return (
     <View className="w-full flex flex-col items-center">
@@ -35,14 +41,21 @@ const SubjectInput: React.FC<SubjectInputProps> = ({
         <Controller
           control={control}
           name={name}
+          defaultValue={value ?? ""}
           rules={{ required: required }}
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value: fieldValue } }) => (
             <TextInput
               className="h-14 w-3/4 bg-white rounded-lg p-4 border border-[#233A6A]"
-              value={value}
+              value={fieldValue}
               placeholder={placeholder}
               placeholderTextColor="#6B7280"
-              onChangeText={onChange}
+              onChangeText={(text) => {
+                const filtered = numericType
+                  ? text.replace(/[^0-9]/g, "")
+                  : text;
+                onChange(filtered);
+              }}
+              keyboardType={numericType ? "numeric" : "default"}
             />
           )}
         />

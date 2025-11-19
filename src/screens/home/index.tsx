@@ -1,48 +1,67 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ScrollView, Text, View, useColorScheme, Alert } from "react-native";
-import { logout, createSubjects, getSubjects } from "@functions/index";
+import {
+  ScrollView,
+  Text,
+  View,
+  useColorScheme,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import {
+  logout,
+  createSubjects,
+  getSubjects,
+  deleteSubjects,
+  updateSubjects,
+} from "@functions/index";
 import { useNavigation } from "@react-navigation/native";
 import { getId } from "@src/asyncStorageData/index";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SubjectModal } from "@screens/newSubject";
 import { Button } from "@src/components/buttons/button";
 import { Header } from "@src/components/header";
-
+import { type Subject } from "@functions/types";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
 
 const Home: React.FC = () => {
-  const [simulaBanco, setSimulaBanco] = useState<any>([]);
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
-  const [subjects, setSubjects] = useState<JSON[]>([]);
+  const [subjects, setSubjects] = useState<Array<Subject>>([]);
   const [loading, setLoading] = useState<Boolean>(false);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  const [editModal, setEditModal] = useState<any>({});
   const [subjectConfigModalIsOpen, setSubjectConfigModalIsOpen] =
     useState<Boolean>(false);
 
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
-  const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
   const isDarkMode = colorScheme === "dark";
 
   useEffect(() => {
     loadSubjects();
-  }, [subjects, simulaBanco]);
+  }, []);
 
-  const openConfigForSubject = () => {
-    setSubjectConfigModalIsOpen(true);
+  const openConfigForSubject = (subjectId?: string) => {
+    if (subjectId) setSelectedSubjectId(subjectId);
+    setSubjectConfigModalIsOpen((prev) => !prev);
   };
 
-  const handleremoveSubject = () => {
-    openConfigForSubject();
-    // AsyncStorage.removeItem("subjects");
-    // setSimulaBanco([]);
+  const handleremoveSubject = async (subjectId: string) => {
+    try {
+      const id = await getId();
+      if (!id) return;
+      await deleteSubjects(id, subjectId);
+      loadSubjects();
+    } catch (error) {
+      console.error("Failed to remove subject:", error);
+    } finally {
+      setSubjectConfigModalIsOpen(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -55,33 +74,51 @@ const Home: React.FC = () => {
     }
   };
 
-  const saveSubjects = async (subjectsToSave: Array<object>) => {
-    console.log("Saving subjects:", subjectsToSave);
+  const saveSubjects = async (subjectsToSave: Array<Subject>) => {
+    const id = await getId();
+    if (!id) return;
+    if (subjectsToSave[0] !== undefined && subjectsToSave[0].id) {
+      try {
+        updatecurrentSubjects(id, subjectsToSave[0]);
+        return;
+      } catch (error) {
+        console.error("Failed to update subjects:", error);
+      }
+    }
+
     const subjectsToSend = subjectsToSave[0];
 
     if (subjectsToSend === null || subjectsToSend === undefined) return;
 
-    const id = await getId();
-    if (!id) {
-      console.warn("No user id found; skipping creating subjects.");
-      return;
-    }
     try {
       await createSubjects(id, subjectsToSend);
+      await loadSubjects();
     } catch (error) {
       console.error("Failed to create subjects:", error);
     }
   };
 
+  const updatecurrentSubjects = async (id: string, subjects: Subject) => {
+    try {
+      await updateSubjects(id, subjects);
+    } catch (error) {
+      console.error("Failed to update subjects:", error);
+    } finally {
+      await loadSubjects();
+    }
+  };
+
   const loadSubjects = async () => {
+    setLoading(true);
     try {
       const id = await getId();
       if (!id) return;
       const res = await getSubjects(id);
-      const newSubject = res.data.newSubject;
-      console.log("New Subject:", newSubject);
-      // const updatedSubjects = [...subjects, newSubject];
-      // setSubjects(updatedSubjects);
+
+      const newSubject = res.newSubject;
+
+      if (!newSubject) return;
+      setSubjects(newSubject);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     } finally {
@@ -89,17 +126,43 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleSubjectsFromModal = async (newSubject: any) => {
-    const updatedSubjects = [...subjects, newSubject];
-    setSubjects(updatedSubjects);
-    await saveSubjects(updatedSubjects);
+  const handleSubjectsFromModal = async (newSubject: Subject) => {
+    await saveSubjects([newSubject]);
+  };
+
+  const handleEditSubject = () => {
+    if (!selectedSubjectId) return;
+    const currentData = subjects.find(
+      (subject) => subject.id === selectedSubjectId
+    );
+    setEditModal(currentData);
+    setSubjectConfigModalIsOpen(false);
+    setModalIsOpen(true);
+  };
+
+  const showAlert = (
+    confirm: string,
+    cancel: string,
+    functionToUse: () => void
+  ) => {
+    Alert.alert("Confirmação", "Tem certeza que deseja remover esta matéria?", [
+      {
+        text: cancel,
+        style: "cancel",
+      },
+      { text: confirm, onPress: () => functionToUse() },
+    ]);
   };
 
   return (
     <>
       {loading ? (
-        <Text>Loading...</Text>
-      ) : simulaBanco.length === 0 ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      ) : subjects.length === 0 ? (
         <>
           <View className="flex-1 ">
             <Button
@@ -108,7 +171,7 @@ const Home: React.FC = () => {
               icon={
                 <MaterialCommunityIcons name="logout" size={24} color="blue" />
               }
-            ></Button>
+            />
 
             <View className="flex-1 justify-center items-center w-screen dark:bg-gray-700">
               <Ionicons
@@ -133,21 +196,18 @@ const Home: React.FC = () => {
                 style="h-14 w-auto rounded-lg items-center justify-center flex-row mt-10 pr-4 pl-4"
                 title="Adicionar Matéria"
               />
-              {modalIsOpen && (
-                <SubjectModal
-                  modalIsOpen={true}
-                  setModalIsOpen={setModalIsOpen}
-                  onSaveSubject={handleSubjectsFromModal}
-                />
-              )}
             </View>
           </View>
         </>
       ) : (
         <View className="flex-1 items-center bg-blue-50 dark:bg-visible dark:bg-gray-900">
           <View>
-            <Header subjectsFromModal={handleSubjectsFromModal} />
+            <Header
+              subjectsFromModal={handleSubjectsFromModal}
+              handleLogout={handleLogout}
+            />
           </View>
+
           <ScrollView
             contentContainerStyle={{
               paddingHorizontal: 16,
@@ -161,8 +221,9 @@ const Home: React.FC = () => {
           >
             <View className="flex-1 w-full px-4 mt-4 gap-6">
               <Text className="text-xl font-extrabold dark:text-white">
-                Your subjects
+                Suas Matérias Cadastradas
               </Text>
+
               <View
                 className="h-28 w-full bg-slate-50 shadow-lg shadow-slate-300  mt-4 rounded-lg 
          dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800"
@@ -175,34 +236,15 @@ const Home: React.FC = () => {
                     className="mr-2 p-2 rounded-lg bg-blue-100 dark:bg-blue-300"
                   />
                   <View className="ml-2">
-                    <Text className="font-bold mb-2 dark:text-white">2</Text>
                     <Text className="font-bold dark:text-white">
-                      Active subjects
+                      Matérias Cadastradas
+                    </Text>
+                    <Text className="font-bold mt-2 dark:text-white">
+                      {subjects.length}
                     </Text>
                   </View>
                 </View>
               </View>
-
-              <View
-                className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow-lg shadow-slate-300
-         dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800"
-              >
-                <View className="p-6 flex flex-row">
-                  <FontAwesome6
-                    name="user-graduate"
-                    size={24}
-                    color={`${isDarkMode ? "#A3418F" : "#BE89E0"}`}
-                    className="mr-2 p-2 rounded-lg bg-purple-100"
-                  />
-                  <View className="ml-2">
-                    <Text className="font-bold mb-2 dark:text-white">2</Text>
-                    <Text className="font-bold dark:text-white">
-                      Total classes
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
               <View className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow-lg shadow-slate-300 dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800">
                 <View className="p-6 flex flex-row">
                   <FontAwesome5
@@ -212,15 +254,17 @@ const Home: React.FC = () => {
                     className="mr-2 p-2 rounded-lg bg-green-100"
                   />
                   <View className="ml-2">
-                    <Text className="font-bold mb-2 dark:text-white">2</Text>
                     <Text className="font-bold dark:text-white">
                       Professors
+                    </Text>
+                    <Text className="font-bold mt-2 dark:text-white">
+                      {subjects.length}
                     </Text>
                   </View>
                 </View>
               </View>
-              {simulaBanco.length > 0 &&
-                simulaBanco.map((object: any, index: number) => (
+              {subjects.length > 0 &&
+                subjects.map((object: Subject, index: number) => (
                   <View
                     key={index}
                     className={`h-auto w-full flex flex-col bg-slate-50 shadow-lg shadow-slate-300   mt-4 rounded-lg dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800`}
@@ -248,7 +292,7 @@ const Home: React.FC = () => {
                             <FontAwesome
                               name="user-o"
                               size={10}
-                              color="black"
+                              color={isDarkMode ? "white" : "black"}
                               className="mb-2 mr-2"
                             />
                             <Text className="mb-2 dark:text-white">
@@ -260,17 +304,17 @@ const Home: React.FC = () => {
                       <Entypo
                         name="dots-three-vertical"
                         size={12}
-                        color="black"
+                        color={isDarkMode ? "white" : "black"}
                         className="mt-6 mr-4"
-                        onPress={() => {
-                          handleremoveSubject();
-                        }}
+                        onPress={() => openConfigForSubject(object.id)}
                       />
                     </View>
 
                     <View className="w-full flex flex-row  px-6 mb-4">
-                      <View className="bg-gray-100 w-11/12 p-2 rounded-b-lg rounded-t-lg">
-                        <Text>{object.collegePeriod}º Período</Text>
+                      <View className="bg-gray-100 w-11/12 p-2 rounded-b-lg rounded-t-lg dark:bg-gray-800">
+                        <Text className="text-black dark:text-white">
+                          {object.collegePeriod}º Período
+                        </Text>
                       </View>
                     </View>
 
@@ -279,19 +323,21 @@ const Home: React.FC = () => {
                         <Feather
                           name="calendar"
                           size={18}
-                          color="black"
+                          color={isDarkMode ? "white" : "black"}
                           className="mr-2"
                         />
-                        <Text className="">
+                        <Text className="text-black dark:text-white">
                           {object.classTime} Aulas restantes
                         </Text>
                       </View>
                     </View>
 
                     <View className="pl-6 flex flex-row items-center justify-between mb-4">
-                      <Text>Frequência </Text>
+                      <Text className="text-black dark:text-white">
+                        Frequência
+                      </Text>
                       <Text className=" font-medium mr-6 p-2 rounded-lg bg-green-200 dark:text-white">
-                        50%
+                        <Text className="text-white dark:text-black">50%</Text>
                       </Text>
                     </View>
                   </View>
@@ -302,16 +348,14 @@ const Home: React.FC = () => {
       )}
       {subjectConfigModalIsOpen && (
         <GestureHandlerRootView>
-          <View className="flex-1 justify-center items-center p-4">
+          <View className="flex-1 justify-center items-center p-4 border-t-slate-300 dark:border-t-slate-700 dark:bg-gray-700">
             <Text className="text-lg font-semibold mb-4 dark:text-white">
               Configurações da Matéria
             </Text>
 
-            <View className="w-full gap-4">
+            <View className="w-full gap-10">
               <Button
-                onPress={() => {
-                  console.log("Editar matéria");
-                }}
+                onPress={handleEditSubject}
                 title="Editar Matéria"
                 style="h-12 w-full rounded-lg items-center justify-center flex-row bg-blue-500"
                 icon={<FontAwesome name="edit" size={16} color="#fff" />}
@@ -319,24 +363,32 @@ const Home: React.FC = () => {
 
               <Button
                 onPress={() => {
-                  console.log("Remover matéria");
+                  showAlert("OK", "Cancelar", () =>
+                    handleremoveSubject(selectedSubjectId)
+                  );
                 }}
-                title="Remover Matéria"
+                title="Deletar Matéria"
                 style="h-12 w-full rounded-lg items-center justify-center flex-row bg-red-500"
                 icon={<FontAwesome name="trash" size={16} color="#fff" />}
               />
 
               <Button
-                onPress={() => {
-                  console.log("Fechar");
-                }}
-                title="Cancelar"
+                onPress={() => openConfigForSubject()}
+                title="Fechar"
                 style="h-12 w-full rounded-lg items-center justify-center flex-row bg-gray-500"
                 icon={<FontAwesome name="close" size={16} color="#fff" />}
               />
             </View>
           </View>
         </GestureHandlerRootView>
+      )}
+      {modalIsOpen && (
+        <SubjectModal
+          currentData={editModal}
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={setModalIsOpen}
+          onSaveSubject={handleSubjectsFromModal}
+        />
       )}
     </>
   );

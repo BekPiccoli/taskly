@@ -32,7 +32,6 @@ const Login: React.FC = () => {
       const res = await login(email, password);
       navigation.navigate("Home" as never);
     } catch (error) {
-      console.log(error);
       Alert.alert(
         "Erro",
         "Não foi possível fazer login, verifique seu email ou senha"

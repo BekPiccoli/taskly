@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
     >
       {icon && <View>{icon}</View>}
       {title && !loading && (
-        <Text className="text-white text-base font-semibold">{title}</Text>
+        <Text className="text-white text-base font-semibold p-2">{title}</Text>
       )}
       {loading && <ActivityIndicator color="white" />}
     </TouchableOpacity>

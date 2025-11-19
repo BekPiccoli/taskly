@@ -1,8 +1,8 @@
 import axios from "axios";
 import { saveId, getId, removeId } from "@asyncStorageData/index";
-
-// const taskly_api = "http://localhost:3001";
-const taskly_api = "http://192.168.100.7:3001";
+import { type Subject } from "./types";
+const taskly_api = "http://localhost:3001";
+// const taskly_api = "http://192.168.100.7:3001";
 
 export const verifyAuthentication = async () => {
   try {
@@ -25,7 +25,6 @@ export const register = async (email: string, password: string) => {
     email,
     password,
   });
-  console.log(res.data);
   const id = res.data.id;
   saveId(id);
 };
@@ -54,11 +53,11 @@ export const logout = async () => {
   }
 };
 
-export const createSubjects = async (id: string, subjects: object) => {
+export const createSubjects = async (id: string, subjects: Subject) => {
   try {
-    const res = await axios.post(`${taskly_api}/createSubjects`, {
-      id,
-      subjects,
+    const res = await axios.post(`${taskly_api}/subjects/createSubjects`, {
+      id: id,
+      subject: subjects,
     });
     return res.data;
   } catch (error) {
@@ -69,13 +68,38 @@ export const createSubjects = async (id: string, subjects: object) => {
 
 export const getSubjects = async (id: string) => {
   try {
-    const res = await axios.post(`${taskly_api}/getSubjects`, {
-      id: id,
+    const res = await axios.post(`${taskly_api}/subjects/getSubjects`, {
+      id,
     });
-    console.log("Get Subjects response:", res.data);
+
+    if (!res.data || res.data === undefined || res.data.length === 0) {
+      return;
+    }
     return res.data;
   } catch (error) {
     console.error("Get Subjects error:", error);
-    throw error;
+  }
+};
+
+export const updateSubjects = async (id: string, subjects: Subject) => {
+  try {
+    const res = await axios.patch(`${taskly_api}/subjects/updateSubject`, {
+      id,
+      subject: subjects,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Update Subjects error:", error);
+  }
+};
+
+export const deleteSubjects = async (id: string, subjectId: string) => {
+  try {
+    const res = await axios.delete(`${taskly_api}/subjects/deleteSubject`, {
+      data: { id, subjectId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Delete Subjects error:", error);
   }
 };

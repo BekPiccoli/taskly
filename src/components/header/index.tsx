@@ -4,24 +4,35 @@ import { LogoTaskly } from "@components/logo";
 import { Button } from "@components/buttons/button";
 import { SubjectModal } from "@screens/newSubject";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { type Subject } from "@functions/types";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
 interface HeaderProps {
-  subjectsFromModal: (data: object) => void;
+  subjectsFromModal: (data: Subject) => void;
+  handleLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ subjectsFromModal }) => {
+const Header: React.FC<HeaderProps> = ({ subjectsFromModal, handleLogout }) => {
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
 
-  const handleSaveSubject = (subjectData: object) => {
+  const handleSaveSubject = (subjectData: Subject) => {
     subjectsFromModal(subjectData);
   };
 
   return (
     <>
       <View
-        className="w-screen h-40 bg-bgLight shadow-lg shadow-slate-400  flex flex-row  items-center  justify-between gap-2
+        className="w-screen h-40 bg-bgLight shadow-lg shadow-slate-400  flex flex-row  items-center  justify-center gap-8
        dark:bg-gray-950 dark:shadow-lg dark:shadow-slate-800"
       >
-        <View className="flex flex-row items-center justify-center mt-6">
+        <Button
+          onPress={handleLogout}
+          style="h-10 w-10 rounded-lg items-center justify-center ml-8 mt-10"
+          icon={
+            <MaterialCommunityIcons name="logout" size={22} color="white" />
+          }
+        />
+        <View className="flex flex-row items-center justify-center w-7/12 mt-14">
           <LogoTaskly width={100} height={100} alt="Taskly Logo" />
           <View className="">
             <Text className="text-black text-lg font-extrabold dark:text-white">
@@ -32,10 +43,9 @@ const Header: React.FC<HeaderProps> = ({ subjectsFromModal }) => {
             </Text>
           </View>
         </View>
-
         <Button
           onPress={() => setModalIsOpen(true)}
-          style="h-12 w-12 rounded-lg items-center justify-center mr-8 mt-10"
+          style="h-10 w-10 rounded-lg items-center justify-center mr-10 mt-10"
           icon={<FontAwesome5 name="plus" size={22} color="white" />}
         />
       </View>
