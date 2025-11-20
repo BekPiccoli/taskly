@@ -1,33 +1,32 @@
-import React, { useEffect, useMemo, useState } from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
+  createSubjects,
+  deleteSubjects,
+  getSubjects,
+  logout,
+  updateSubjects,
+} from "@functions/index";
+import { type Subject } from "@functions/types";
+import { useNavigation } from "@react-navigation/native";
+import { SubjectModal } from "@screens/newSubject";
+import { getId } from "@src/asyncStorageData/index";
+import { Button } from "@src/components/buttons/button";
+import { Header } from "@src/components/header";
+import { SubjectCard } from "@src/components/subjectCard";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
   ScrollView,
   Text,
   View,
   useColorScheme,
-  Alert,
-  ActivityIndicator,
 } from "react-native";
-import {
-  logout,
-  createSubjects,
-  getSubjects,
-  deleteSubjects,
-  updateSubjects,
-} from "@functions/index";
-import { useNavigation } from "@react-navigation/native";
-import { getId } from "@src/asyncStorageData/index";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SubjectModal } from "@screens/newSubject";
-import { Button } from "@src/components/buttons/button";
-import { Header } from "@src/components/header";
-import { type Subject } from "@functions/types";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Feather from "@expo/vector-icons/Feather";
-import Entypo from "@expo/vector-icons/Entypo";
 
 const Home: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
@@ -54,11 +53,15 @@ const Home: React.FC = () => {
   const handleremoveSubject = async (subjectId: string) => {
     try {
       const id = await getId();
-      if (!id) return;
+      if (!id) {
+        Alert.alert("Erro", "Usuário não encontrado");
+        return;
+      }
       await deleteSubjects(id, subjectId);
+      Alert.alert("Sucesso", "Matéria removida com sucesso!");
       loadSubjects();
-    } catch (error) {
-      console.error("Failed to remove subject:", error);
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Não foi possível remover a matéria");
     } finally {
       setSubjectConfigModalIsOpen(false);
     }
@@ -76,14 +79,19 @@ const Home: React.FC = () => {
 
   const saveSubjects = async (subjectsToSave: Array<Subject>) => {
     const id = await getId();
-    if (!id) return;
+    if (!id) {
+      Alert.alert("Erro", "Usuário não encontrado");
+      return;
+    }
+
     if (subjectsToSave[0] !== undefined && subjectsToSave[0].id) {
       try {
-        updatecurrentSubjects(id, subjectsToSave[0]);
+        await updatecurrentSubjects(id, subjectsToSave[0]);
         return;
-      } catch (error) {
-        console.error("Failed to update subjects:", error);
+      } catch (error: any) {
+        Alert.alert("Erro", error.message || "Não foi possível atualizar a matéria");
       }
+      return;
     }
 
     const subjectsToSend = subjectsToSave[0];
@@ -92,17 +100,19 @@ const Home: React.FC = () => {
 
     try {
       await createSubjects(id, subjectsToSend);
+      Alert.alert("Sucesso", "Matéria criada com sucesso!");
       await loadSubjects();
-    } catch (error) {
-      console.error("Failed to create subjects:", error);
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Não foi possível criar a matéria");
     }
   };
 
   const updatecurrentSubjects = async (id: string, subjects: Subject) => {
     try {
       await updateSubjects(id, subjects);
-    } catch (error) {
-      console.error("Failed to update subjects:", error);
+      Alert.alert("Sucesso", "Matéria atualizada com sucesso!");
+    } catch (error: any) {
+      throw error;
     } finally {
       await loadSubjects();
     }
@@ -112,15 +122,21 @@ const Home: React.FC = () => {
     setLoading(true);
     try {
       const id = await getId();
-      if (!id) return;
+      if (!id) {
+        return;
+      }
       const res = await getSubjects(id);
+      const subjectsList = res?.subjects || res?.newSubject || [];
 
-      const newSubject = res.newSubject;
 
-      if (!newSubject) return;
-      setSubjects(newSubject);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      if (!subjectsList || subjectsList.length === 0) {
+        setSubjects([]);
+        return;
+      }
+
+      setSubjects(subjectsList);
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Não foi possível carregar as matérias");
     } finally {
       setLoading(false);
     }
@@ -220,127 +236,74 @@ const Home: React.FC = () => {
             showsVerticalScrollIndicator={false}
           >
             <View className="flex-1 w-full px-4 mt-4 gap-6">
-              <Text className="text-xl font-extrabold dark:text-white">
-                Suas Matérias Cadastradas
+              <Text className="text-2xl font-extrabold mb-2 dark:text-white">
+                Suas Disciplinas
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400 mb-6">
+                Acompanhe seu progresso acadêmico
               </Text>
 
-              <View
-                className="h-28 w-full bg-slate-50 shadow-lg shadow-slate-300  mt-4 rounded-lg 
-         dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800"
-              >
-                <View className="p-6 flex flex-row">
-                  <MaterialIcons
-                    name="menu-book"
-                    size={24}
-                    color={isDarkMode ? "#294A69" : "#3781CC"}
-                    className="mr-2 p-2 rounded-lg bg-blue-100 dark:bg-blue-300"
-                  />
-                  <View className="ml-2">
-                    <Text className="font-bold dark:text-white">
-                      Matérias Cadastradas
-                    </Text>
-                    <Text className="font-bold mt-2 dark:text-white">
-                      {subjects.length}
-                    </Text>
+              <View className="flex flex-row gap-4 mb-6">
+                <View
+                  className="flex-1 h-24 rounded-xl p-4 shadow-md"
+                  style={{
+                    backgroundColor: isDarkMode ? "#1F2937" : "#EFF6FF",
+                  }}
+                >
+                  <View className="flex flex-row items-center">
+                    <View
+                      className="w-10 h-10 rounded-lg items-center justify-center mr-3"
+                      style={{ backgroundColor: "#3B82F6" }}
+                    >
+                      <MaterialIcons name="menu-book" size={20} color="#fff" />
+                    </View>
+                    <View>
+                      <Text className="text-xs text-gray-600 dark:text-gray-400">
+                        Disciplinas
+                      </Text>
+                      <Text className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {subjects.length}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              <View className=" h-28 w-full bg-slate-50 mt-4 rounded-lg shadow-lg shadow-slate-300 dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800">
-                <View className="p-6 flex flex-row">
-                  <FontAwesome5
-                    name="chalkboard-teacher"
-                    size={24}
-                    color={`${isDarkMode ? "#3C803F" : "#5AE06D"}`}
-                    className="mr-2 p-2 rounded-lg bg-green-100"
-                  />
-                  <View className="ml-2">
-                    <Text className="font-bold dark:text-white">
-                      Professors
-                    </Text>
-                    <Text className="font-bold mt-2 dark:text-white">
-                      {subjects.length}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              {subjects.length > 0 &&
-                subjects.map((object: Subject, index: number) => (
-                  <View
-                    key={index}
-                    className={`h-auto w-full flex flex-col bg-slate-50 shadow-lg shadow-slate-300   mt-4 rounded-lg dark:bg-gray-950 dark:shadow-lg  dark:shadow-slate-800`}
-                    style={{
-                      borderTopWidth: 6,
-                      borderTopColor: object.color,
-                    }}
-                  >
-                    <View className=" flex justify-between flex-row">
-                      <View className="p-6 flex flex-row">
-                        <View
-                          className="h-12 w-12 rounded-lg flex items-center justify-center mr-4"
-                          style={{ backgroundColor: object.color }}
-                        >
-                          <Text className="text-white text-2xl font-bold text-center mt-1">
-                            {object.subjectName.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                        <View className="flex flex-col">
-                          <Text className="font-bold mb-2 dark:text-white">
-                            {object.subjectName}
-                          </Text>
 
-                          <View className="flex flex-row items-center">
-                            <FontAwesome
-                              name="user-o"
-                              size={10}
-                              color={isDarkMode ? "white" : "black"}
-                              className="mb-2 mr-2"
-                            />
-                            <Text className="mb-2 dark:text-white">
-                              {object.teacherName}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <Entypo
-                        name="dots-three-vertical"
-                        size={12}
-                        color={isDarkMode ? "white" : "black"}
-                        className="mt-6 mr-4"
-                        onPress={() => openConfigForSubject(object.id)}
+                <View
+                  className="flex-1 h-24 rounded-xl p-4 shadow-md"
+                  style={{
+                    backgroundColor: isDarkMode ? "#1F2937" : "#F0FDF4",
+                  }}
+                >
+                  <View className="flex flex-row items-center">
+                    <View
+                      className="w-10 h-10 rounded-lg items-center justify-center mr-3"
+                      style={{ backgroundColor: "#10B981" }}
+                    >
+                      <FontAwesome5
+                        name="chalkboard-teacher"
+                        size={18}
+                        color="#fff"
                       />
                     </View>
-
-                    <View className="w-full flex flex-row  px-6 mb-4">
-                      <View className="bg-gray-100 w-11/12 p-2 rounded-b-lg rounded-t-lg dark:bg-gray-800">
-                        <Text className="text-black dark:text-white">
-                          {object.collegePeriod}º Período
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View className="pl-6 flex flex-row mb-4">
-                      <View className="flex flex-row items-center ">
-                        <Feather
-                          name="calendar"
-                          size={18}
-                          color={isDarkMode ? "white" : "black"}
-                          className="mr-2"
-                        />
-                        <Text className="text-black dark:text-white">
-                          {object.classTime} Aulas restantes
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View className="pl-6 flex flex-row items-center justify-between mb-4">
-                      <Text className="text-black dark:text-white">
-                        Frequência
+                    <View>
+                      <Text className="text-xs text-gray-600 dark:text-gray-400">
+                        Professores
                       </Text>
-                      <Text className=" font-medium mr-6 p-2 rounded-lg bg-green-200 dark:text-white">
-                        <Text className="text-white dark:text-black">50%</Text>
+                      <Text className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        {subjects.length}
                       </Text>
                     </View>
                   </View>
+                </View>
+              </View>
+
+              {subjects.length > 0 &&
+                subjects.map((subject: Subject, index: number) => (
+                  <SubjectCard
+                    key={index}
+                    subject={subject}
+                    onPressConfig={() => openConfigForSubject(subject.id)}
+                  />
                 ))}
             </View>
           </ScrollView>

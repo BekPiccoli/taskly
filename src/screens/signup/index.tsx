@@ -1,18 +1,17 @@
-import { type NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "@contexts/authContext";
-import { useState } from "react";
-import { PasswordInput } from "@components/inputs/password";
-import { EmailInput } from "@components/inputs/email";
 import { Button } from "@components/buttons/button";
+import { EmailInput } from "@components/inputs/email";
+import { PasswordInput } from "@components/inputs/password";
 import { LogoTaskly } from "@components/logo";
+import { useNavigation } from "@react-navigation/native";
+import { type NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { register } from "@src/functions/index";
+import { useState } from "react";
 import {
-  Text,
-  View,
   Alert,
   KeyboardAvoidingView,
   ScrollView,
+  Text,
+  View,
 } from "react-native";
 
 const Signup: React.FC = () => {
@@ -42,7 +41,6 @@ const Signup: React.FC = () => {
         navigation.navigate("Home");
       });
     } catch (error) {
-      console.error(error);
       Alert.alert("Erro", "Não foi possível realizar o cadastro.");
     } finally {
       setLoading(false);
