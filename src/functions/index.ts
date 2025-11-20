@@ -1,8 +1,9 @@
+import { getId, removeId, saveId } from "@asyncStorageData/index";
+import { API_URL } from "@env";
 import axios from "axios";
-import { saveId, getId, removeId } from "@asyncStorageData/index";
-import { type Subject } from "./types";
-const taskly_api = "http://localhost:3001";
-// const taskly_api = "http://192.168.100.7:3001";
+import { type Subject, type Task } from "./types";
+
+const taskly_api = API_URL;
 
 export const verifyAuthentication = async () => {
   try {
@@ -16,7 +17,6 @@ export const verifyAuthentication = async () => {
     const isAuthenticated = res.data.isAuthenticated;
     return isAuthenticated;
   } catch (error) {
-    console.error("erro: ", error);
   }
 };
 
@@ -47,7 +47,6 @@ export const logout = async () => {
       id: id,
     });
   } catch (error) {
-    console.error("Logout error:", error);
   } finally {
     await removeId();
   }
@@ -55,51 +54,160 @@ export const logout = async () => {
 
 export const createSubjects = async (id: string, subjects: Subject) => {
   try {
-    const res = await axios.post(`${taskly_api}/subjects/createSubjects`, {
+    const res = await axios.post(`${taskly_api}/subjects`, {
       id: id,
       subject: subjects,
     });
     return res.data;
-  } catch (error) {
-    console.error("Create Subjects error:", error);
-    throw error;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao criar matéria";
+    const errorDetails = error.response?.data?.details;
+
+    
+    if (errorDetails) {
+      throw new Error(`${errorMessage}: ${errorDetails.join(", ")}`);
+    }
+    throw new Error(errorMessage);
   }
 };
 
 export const getSubjects = async (id: string) => {
   try {
-    const res = await axios.post(`${taskly_api}/subjects/getSubjects`, {
-      id,
+    const res = await axios.get(`${taskly_api}/subjects`, {
+      params: { userId: id }
     });
-
-    if (!res.data || res.data === undefined || res.data.length === 0) {
-      return;
+    if (!res.data || res.data === undefined) {
+      return { subjects: [] };
     }
     return res.data;
-  } catch (error) {
-    console.error("Get Subjects error:", error);
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao buscar matérias";
+    throw new Error(errorMessage);
   }
 };
 
 export const updateSubjects = async (id: string, subjects: Subject) => {
   try {
-    const res = await axios.patch(`${taskly_api}/subjects/updateSubject`, {
+    if (!subjects.id) {
+      throw new Error("Subject ID is required for update");
+    }
+
+    const res = await axios.patch(`${taskly_api}/subjects/${subjects.id}`, {
       id,
       subject: subjects,
     });
     return res.data;
-  } catch (error) {
-    console.error("Update Subjects error:", error);
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao atualizar matéria";
+    const errorDetails = error.response?.data?.details;
+    
+    if (errorDetails) {
+      throw new Error(`${errorMessage}: ${errorDetails.join(", ")}`);
+    }
+    throw new Error(errorMessage);
   }
 };
 
 export const deleteSubjects = async (id: string, subjectId: string) => {
   try {
-    const res = await axios.delete(`${taskly_api}/subjects/deleteSubject`, {
-      data: { id, subjectId },
+    const res = await axios.delete(`${taskly_api}/subjects/${subjectId}`, {
+      data: { id },
     });
     return res.data;
-  } catch (error) {
-    console.error("Delete Subjects error:", error);
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao deletar matéria";
+    throw new Error(errorMessage);
+  }
+};
+
+export const createTask = async (id: string, task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  try {
+    const res = await axios.post(`${taskly_api}/tasks`, {
+      id: id,
+      task: task,
+    });
+    return res.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao criar tarefa";
+    const errorDetails = error.response?.data?.details;
+
+    if (errorDetails) {
+      throw new Error(`${errorMessage}: ${errorDetails.join(", ")}`);
+    }
+    throw new Error(errorMessage);
+  }
+};
+
+export const getTasks = async (id: string, filters?: {
+  subjectId?: string;
+  status?: string;
+  type?: string;
+  isOverdue?: boolean;
+  dueOnStart?: number;
+  dueOnEnd?: number;
+}) => {
+  try {
+    const params: any = { userId: id };
+    
+    if (filters) {
+      if (filters.subjectId) params.subjectId = filters.subjectId;
+      if (filters.status) params.status = filters.status;
+      if (filters.type) params.type = filters.type;
+      if (filters.isOverdue !== undefined) params.isOverdue = filters.isOverdue;
+      if (filters.dueOnStart) params.dueOnStart = filters.dueOnStart;
+      if (filters.dueOnEnd) params.dueOnEnd = filters.dueOnEnd;
+    }
+
+    const res = await axios.get(`${taskly_api}/tasks`, { params });
+    
+    if (!res.data || res.data === undefined) {
+      return { tasks: [] };
+    }
+    return res.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao buscar tarefas";
+    throw new Error(errorMessage);
+  }
+};
+
+export const getTaskById = async (id: string, taskId: string) => {
+  try {
+    const res = await axios.get(`${taskly_api}/tasks/${taskId}`, {
+      data: { id },
+    });
+    return res.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao buscar tarefa";
+    throw new Error(errorMessage);
+  }
+};
+
+export const updateTask = async (id: string, taskId: string, updates: Partial<Task>) => {
+  try {
+    const res = await axios.patch(`${taskly_api}/tasks/${taskId}`, {
+      id,
+      updates,
+    });
+    return res.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao atualizar tarefa";
+    const errorDetails = error.response?.data?.details;
+    
+    if (errorDetails) {
+      throw new Error(`${errorMessage}: ${errorDetails.join(", ")}`);
+    }
+    throw new Error(errorMessage);
+  }
+};
+
+export const deleteTask = async (id: string, taskId: string) => {
+  try {
+    const res = await axios.delete(`${taskly_api}/tasks/${taskId}`, {
+      data: { id },
+    });
+    return res.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "Erro ao deletar tarefa";
+    throw new Error(errorMessage);
   }
 };

@@ -1,12 +1,13 @@
 // @ts-ignore
-import "./global.css";
-import { Login } from "@screens/login";
-import { Signup } from "@src/screens/signup";
-import { Home } from "@screens/home";
 import { AuthProvider, useAuth } from "@contexts/authContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Home } from "@screens/home";
+import { Login } from "@screens/login";
+import { SubjectDetailsScreen } from "@screens/subjectDetails";
+import { Signup } from "@src/screens/signup";
 import { ActivityIndicator, View } from "react-native";
+import "./global.css";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ function RootStack() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="SubjectDetails" component={SubjectDetailsScreen} />
     </Stack.Navigator>
   );
 }
