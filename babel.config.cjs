@@ -7,6 +7,17 @@ module.exports = function (api) {
     ],
     plugins: [
       [
+        "module:react-native-dotenv",
+        {
+          moduleName: "@env",
+          path: ".env",
+          blacklist: null,
+          whitelist: null,
+          safe: false,
+          allowUndefined: true,
+        },
+      ],
+      [
         "module-resolver",
         {
           root: ["./src"],
@@ -26,6 +37,8 @@ module.exports = function (api) {
           },
         },
       ],
+
+      // ⚠️ reanimated SEMPRE por último
       "react-native-reanimated/plugin",
     ],
   };
