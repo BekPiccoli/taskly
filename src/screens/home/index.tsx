@@ -1,5 +1,4 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -23,6 +22,7 @@ import {
   Alert,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
   useColorScheme,
 } from "react-native";
@@ -236,66 +236,46 @@ const Home: React.FC = () => {
             showsVerticalScrollIndicator={false}
           >
             <View className="flex-1 w-full px-4 mt-4 gap-6">
-              <Text className="text-2xl font-extrabold mb-2 dark:text-white">
-                Suas Disciplinas
-              </Text>
-              <Text className="text-gray-600 dark:text-gray-400 mb-6">
-                Acompanhe seu progresso acadêmico
-              </Text>
-
-              <View className="flex flex-row gap-4 mb-6">
-                <View
-                  className="flex-1 h-24 rounded-xl p-4 shadow-md"
-                  style={{
-                    backgroundColor: isDarkMode ? "#1F2937" : "#EFF6FF",
-                  }}
-                >
-                  <View className="flex flex-row items-center">
-                    <View
-                      className="w-10 h-10 rounded-lg items-center justify-center mr-3"
-                      style={{ backgroundColor: "#3B82F6" }}
-                    >
-                      <MaterialIcons name="menu-book" size={20} color="#fff" />
-                    </View>
-                    <View>
-                      <Text className="text-xs text-gray-600 dark:text-gray-400">
-                        Disciplinas
-                      </Text>
-                      <Text className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {subjects.length}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View
-                  className="flex-1 h-24 rounded-xl p-4 shadow-md"
-                  style={{
-                    backgroundColor: isDarkMode ? "#1F2937" : "#F0FDF4",
-                  }}
-                >
-                  <View className="flex flex-row items-center">
-                    <View
-                      className="w-10 h-10 rounded-lg items-center justify-center mr-3"
-                      style={{ backgroundColor: "#10B981" }}
-                    >
-                      <FontAwesome5
-                        name="chalkboard-teacher"
-                        size={18}
-                        color="#fff"
-                      />
-                    </View>
-                    <View>
-                      <Text className="text-xs text-gray-600 dark:text-gray-400">
-                        Professores
-                      </Text>
-                      <Text className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {subjects.length}
-                      </Text>
-                    </View>
-                  </View>
+              <View className="flex flex-row justify-center mb-2">
+                <View className="flex-1 items-center">
+                  <Text className="text-2xl font-extrabold dark:text-white text-center">
+                    Suas Disciplinas
+                  </Text>
+                  <Text className="text-gray-600 dark:text-gray-400 mt-1 text-center">
+                    Acompanhe seu progresso acadêmico
+                  </Text>
                 </View>
               </View>
+
+              {/* Dashboard Quick Access Card */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Dashboard" as never)}
+                activeOpacity={0.8}
+                className="w-full rounded-2xl p-5 shadow-lg mb-6"
+                style={{
+                  backgroundColor: isDarkMode ? "#1E40AF" : "#3B82F6",
+                }}
+              >
+                <View className="flex flex-row items-center justify-between">
+                  <View className="flex flex-row items-center flex-1">
+                    <View
+                      className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+                      style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                    >
+                      <MaterialIcons name="dashboard" size={28} color="#fff" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-bold text-lg mb-1">
+                        Ver Dashboard
+                      </Text>
+                      <Text className="text-white text-sm opacity-90">
+                        Visão geral do seu progresso
+                      </Text>
+                    </View>
+                  </View>
+                  <MaterialIcons name="chevron-right" size={28} color="#fff" />
+                </View>
+              </TouchableOpacity>
 
               {subjects.length > 0 &&
                 subjects.map((subject: Subject, index: number) => (

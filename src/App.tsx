@@ -2,6 +2,7 @@
 import { AuthProvider, useAuth } from "@contexts/authContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Dashboard } from "@screens/dashboard";
 import { Home } from "@screens/home";
 import { Login } from "@screens/login";
 import { SubjectDetailsScreen } from "@screens/subjectDetails";
@@ -30,6 +31,7 @@ function RootStack() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="SubjectDetails" component={SubjectDetailsScreen} />
     </Stack.Navigator>
   );
