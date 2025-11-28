@@ -13,6 +13,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "infoPlist": {
+        "NSUserNotificationUsageDescription": "Este app usa notificações para lembrar você de tarefas."
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.react-app"
     },

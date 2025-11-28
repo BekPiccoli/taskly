@@ -8,6 +8,7 @@ import { Login } from "@screens/login";
 import { SubjectDetailsScreen } from "@screens/subjectDetails";
 import { Signup } from "@src/screens/signup";
 import { ActivityIndicator, View } from "react-native";
+import * as Notifications from "expo-notifications";
 import "./global.css";
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +37,14 @@ function RootStack() {
     </Stack.Navigator>
   );
 }
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const App: React.FC = () => {
   return (

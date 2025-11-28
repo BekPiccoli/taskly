@@ -16,7 +16,9 @@ import { getId } from "@src/asyncStorageData/index";
 import { Button } from "@src/components/buttons/button";
 import { Header } from "@src/components/header";
 import { SubjectCard } from "@src/components/subjectCard";
+import { notifyTasksDueToday } from "@src/functions/notification";
 import React, { useEffect, useState } from "react";
+import * as Notifications from "expo-notifications";
 import {
   ActivityIndicator,
   Alert,
@@ -27,7 +29,6 @@ import {
   useColorScheme,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 const Home: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
   const [subjects, setSubjects] = useState<Array<Subject>>([]);
@@ -43,6 +44,20 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     loadSubjects();
+  }, []);
+
+  useEffect(() => {
+    const checkNotificationPermission = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== "granted") {
+        await Notifications.requestPermissionsAsync();
+      }
+    };
+    checkNotificationPermission();
+  }, []);
+
+  useEffect(() => {
+    notifyTasksDueToday();
   }, []);
 
   const openConfigForSubject = (subjectId?: string) => {
@@ -61,7 +76,10 @@ const Home: React.FC = () => {
       Alert.alert("Sucesso", "Matéria removida com sucesso!");
       loadSubjects();
     } catch (error: any) {
-      Alert.alert("Erro", error.message || "Não foi possível remover a matéria");
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível remover a matéria"
+      );
     } finally {
       setSubjectConfigModalIsOpen(false);
     }
@@ -89,7 +107,10 @@ const Home: React.FC = () => {
         await updatecurrentSubjects(id, subjectsToSave[0]);
         return;
       } catch (error: any) {
-        Alert.alert("Erro", error.message || "Não foi possível atualizar a matéria");
+        Alert.alert(
+          "Erro",
+          error.message || "Não foi possível atualizar a matéria"
+        );
       }
       return;
     }
@@ -128,7 +149,6 @@ const Home: React.FC = () => {
       const res = await getSubjects(id);
       const subjectsList = res?.subjects || res?.newSubject || [];
 
-
       if (!subjectsList || subjectsList.length === 0) {
         setSubjects([]);
         return;
@@ -136,7 +156,10 @@ const Home: React.FC = () => {
 
       setSubjects(subjectsList);
     } catch (error: any) {
-      Alert.alert("Erro", error.message || "Não foi possível carregar as matérias");
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível carregar as matérias"
+      );
     } finally {
       setLoading(false);
     }
