@@ -24,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
       className={` ${style} bg-[#4F5DFF]  shadow-lg shadow-slate-400 dark:shadow-lg dark:shadow-slate-700`}
       onPress={onPress}
       disabled={loading}
+      activeOpacity={0.8}
     >
       {icon && <View>{icon}</View>}
       {title && !loading && (

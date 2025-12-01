@@ -12,6 +12,7 @@ import {
   ScrollView,
   Text,
   View,
+  TouchableOpacity,
 } from "react-native";
 
 const Signup: React.FC = () => {
@@ -86,17 +87,27 @@ const Signup: React.FC = () => {
             loading={loading}
             onPress={handleSignup}
             title="Cadastrar-se"
-            style="w-full h-12 rounded-lg flex items-center justify-center"
+            style="w-full h-14 rounded-full flex items-center justify-center"
           />
-          <Text className="text-[#233A6A] mt-9 dark:text-white">
-            Já possui uma conta?{" "}
-            <Text
-              className="text-[#233A6A] underline dark:text-white"
+
+          <View className="flex gap-4 mt-8 w-full items-center">
+            <TouchableOpacity
               onPress={() => navigation.navigate("Login" as never)}
+              className="w-full h-14 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm"
+              activeOpacity={0.8}
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
             >
-              Ir para tela de login
-            </Text>
-          </Text>
+              <Text className="text-[#233A6A] dark:text-blue-300 font-bold text-base">
+                Já tenho uma conta
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

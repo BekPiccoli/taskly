@@ -9,6 +9,9 @@ import { SubjectDetailsScreen } from "@screens/subjectDetails";
 import { Signup } from "@src/screens/signup";
 import { ActivityIndicator, View } from "react-native";
 import * as Notifications from "expo-notifications";
+import { ForgotPassword } from "@screens/forgotPassword";
+
+// @ts-ignore
 import "./global.css";
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +37,7 @@ function RootStack() {
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="SubjectDetails" component={SubjectDetailsScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   );
 }
