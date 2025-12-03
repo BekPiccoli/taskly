@@ -24,10 +24,17 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.higorwilvert.reactapp"
     },
     "web": {
       "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7a7348da-7e1c-4f3b-ac70-7db0f993bc28"
+      },
+      "apiUrl": "${API_URL}"
     }
   }
 }

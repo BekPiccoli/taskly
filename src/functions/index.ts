@@ -1,8 +1,9 @@
 import { getId, removeId, saveId } from "@asyncStorageData/index";
+import { API_URL } from "@env";
 import axios from "axios";
 import { type Note, type Subject, type Task } from "./types";
 
-const taskly_api = process.env.API_URL;
+const taskly_api = API_URL;
 
 export const verifyAuthentication = async () => {
   try {
@@ -23,6 +24,7 @@ export const register = async (email: string, password: string) => {
     email,
     password,
   });
+  console.log(res.data);
   const id = res.data.id;
   saveId(id);
 };
@@ -32,6 +34,7 @@ export const login = async (email: string, password: string) => {
     email,
     password,
   });
+  console.log(res.data);
 
   const id = res.data.id;
   const idExist = await getId();
