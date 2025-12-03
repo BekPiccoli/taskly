@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "react-app",
-    "slug": "react-app",
+    "name": "Taskly",
+    "slug": "taskly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/taskly_logo.png",
@@ -17,7 +17,7 @@
         "NSUserNotificationUsageDescription": "Este app usa notificações para lembrar você de tarefas."
       },
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.react-app"
+      "bundleIdentifier": "com.higorwilvert.taskly"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +25,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.higorwilvert.reactapp"
+      "package": "com.higorwilvert.taskly"
     },
     "web": {
       "bundler": "metro"
