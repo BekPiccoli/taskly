@@ -31,10 +31,11 @@
       "bundler": "metro"
     },
     "extra": {
+      "apiUrl": "${API_URL}",
       "eas": {
-        "projectId": "7a7348da-7e1c-4f3b-ac70-7db0f993bc28"
-      },
-      "apiUrl": "${API_URL}"
-    }
+        "projectId": "8446cc82-1ac7-48ca-ad6b-75591ca0864e"
+      }
+    },
+    "owner": "higorwilvert"
   }
 }
