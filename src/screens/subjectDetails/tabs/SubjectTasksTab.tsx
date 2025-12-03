@@ -1,6 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { createTask, getTasks } from "@functions/index";
+import { createTask, deleteTask, getTasks, updateTask } from "@functions/index";
 import { type Subject, type Task } from "@functions/types";
 import { getId } from "@src/asyncStorageData/index";
 import { TaskCard } from "@src/components/taskCard";
@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { TaskFormModal } from "./TaskFormModal";
+import { TaskViewModal } from "./TaskViewModal";
 
 interface SubjectTasksTabProps {
   subject: Subject;
@@ -23,7 +24,9 @@ interface SubjectTasksTabProps {
 const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [formModalVisible, setFormModalVisible] = useState(false);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const isDarkMode = useColorScheme() === "dark";
 
   const loadTasks = useCallback(async () => {
@@ -61,9 +64,17 @@ const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
         return;
       }
 
-      await createTask(userId, taskData);
-      Alert.alert("Sucesso", "Tarefa criada com sucesso!");
-      setModalVisible(false);
+      if (selectedTask && selectedTask.id) {
+        // Atualizar tarefa existente
+        await updateTask(userId, selectedTask.id, taskData);
+        Alert.alert("Sucesso", "Tarefa atualizada com sucesso!");
+      } else {
+        // Criar nova tarefa
+        await createTask(userId, taskData);
+        Alert.alert("Sucesso", "Tarefa criada com sucesso!");
+      }
+      setFormModalVisible(false);
+      setSelectedTask(null);
       await loadTasks();
     } catch (error: any) {
       Alert.alert(
@@ -71,6 +82,76 @@ const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
         error.message || "Não foi possível criar a tarefa"
       );
     }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const userId = await getId();
+      if (!userId) {
+        Alert.alert("Erro", "Usuário não encontrado");
+        return;
+      }
+
+      await deleteTask(userId, taskId);
+      Alert.alert("Sucesso", "Tarefa excluída com sucesso!");
+      await loadTasks();
+    } catch (error: any) {
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível excluir a tarefa"
+      );
+      throw error;
+    }
+  };
+
+  const handleStatusChange = async (taskId: string, newStatus: Task["status"]) => {
+    try {
+      const userId = await getId();
+      if (!userId) {
+        Alert.alert("Erro", "Usuário não encontrado");
+        return;
+      }
+
+      await updateTask(userId, taskId, { status: newStatus });
+      
+      // Atualizar a task selecionada imediatamente
+      if (selectedTask) {
+        setSelectedTask({ ...selectedTask, status: newStatus });
+      }
+      
+      // Recarregar a lista de tasks
+      await loadTasks();
+      
+      Alert.alert("Sucesso", "Status atualizado com sucesso!");
+    } catch (error: any) {
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível atualizar o status"
+      );
+      throw error;
+    }
+  };
+
+  const handleTaskPress = (task: Task) => {
+    setSelectedTask(task);
+    setViewModalVisible(true);
+  };
+
+  const handleEditTask = () => {
+    setViewModalVisible(false);
+    setFormModalVisible(true);
+  };
+
+  const handleCloseFormModal = () => {
+    setFormModalVisible(false);
+    if (!viewModalVisible) {
+      setSelectedTask(null);
+    }
+  };
+
+  const handleCloseViewModal = () => {
+    setViewModalVisible(false);
+    setSelectedTask(null);
   };
 
   if (loading) {
@@ -113,7 +194,11 @@ const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
               {tasks.length} {tasks.length === 1 ? "Tarefa" : "Tarefas"}
             </Text>
             {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onPress={() => handleTaskPress(task)}
+              />
             ))}
           </>
         )}
@@ -121,7 +206,10 @@ const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
 
       {/* Floating Action Button */}
       <TouchableOpacity
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          setSelectedTask(null);
+          setFormModalVisible(true);
+        }}
         className="absolute bottom-6 right-6 w-16 h-16 rounded-full items-center justify-center shadow-lg"
         style={{
           backgroundColor: subject.color,
@@ -135,11 +223,23 @@ const SubjectTasksTab: React.FC<SubjectTasksTabProps> = ({ subject }) => {
         <FontAwesome name="plus" size={24} color="#fff" />
       </TouchableOpacity>
 
-      {/* Modal de criação */}
-      <TaskFormModal
-        visible={modalVisible}
+      {/* Modal de visualização */}
+      <TaskViewModal
+        visible={viewModalVisible}
+        task={selectedTask}
         subject={subject}
-        onClose={() => setModalVisible(false)}
+        onClose={handleCloseViewModal}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteTask}
+        onStatusChange={handleStatusChange}
+      />
+
+      {/* Modal de criação/edição */}
+      <TaskFormModal
+        visible={formModalVisible}
+        subject={subject}
+        task={selectedTask}
+        onClose={handleCloseFormModal}
         onSubmit={handleCreateTask}
       />
     </View>

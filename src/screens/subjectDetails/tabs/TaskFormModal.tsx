@@ -15,6 +15,7 @@ import {
 interface TaskFormModalProps {
   visible: boolean;
   subject: Subject;
+  task?: Task | null;
   onClose: () => void;
   onSubmit: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => Promise<void>;
 }
@@ -22,10 +23,12 @@ interface TaskFormModalProps {
 const TaskFormModal: React.FC<TaskFormModalProps> = ({
   visible,
   subject,
+  task = null,
   onClose,
   onSubmit,
 }) => {
   const isDarkMode = useColorScheme() === "dark";
+  const isEditing = !!task;
   
   const [title, setTitle] = useState("");
   const [type, setType] = useState<TaskType>("assignment");
@@ -33,6 +36,35 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
   const [dueDate, setDueDate] = useState(new Date());
   const [dateInput, setDateInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Atualizar estados quando a task mudar
+  React.useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setType(task.type);
+      setNotes(task.notes || "");
+      
+      // Converter dueOn para Date
+      const dateStr = String(task.dueOn);
+      const year = parseInt(dateStr.substring(0, 4));
+      const month = parseInt(dateStr.substring(4, 6)) - 1;
+      const day = parseInt(dateStr.substring(6, 8));
+      const taskDate = new Date(year, month, day);
+      setDueDate(taskDate);
+      
+      // Formatar para exibição
+      const dayStr = String(day).padStart(2, "0");
+      const monthStr = String(month + 1).padStart(2, "0");
+      setDateInput(`${dayStr}/${monthStr}/${year}`);
+    } else {
+      // Limpar quando não houver task (modo criação)
+      setTitle("");
+      setType("assignment");
+      setNotes("");
+      setDueDate(new Date());
+      setDateInput("");
+    }
+  }, [task, visible]);
 
   const taskTypes: { value: TaskType; label: string }[] = [
     { value: "assignment", label: "Trabalho" },
@@ -107,7 +139,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           {/* Header */}
           <View className="flex flex-row justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <Text className="text-xl font-bold text-gray-800 dark:text-gray-200">
-              Nova Tarefa
+              {isEditing ? "Editar Tarefa" : "Nova Tarefa"}
             </Text>
             <TouchableOpacity onPress={onClose}>
               <FontAwesome name="close" size={24} color={isDarkMode ? "#9CA3AF" : "#6B7280"} />
@@ -302,7 +334,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
                   }}
                 >
                   <Text className="text-white font-semibold">
-                    {submitting ? "Salvando..." : "Criar Tarefa"}
+                    {submitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Criar Tarefa"}
                   </Text>
                 </TouchableOpacity>
               </View>

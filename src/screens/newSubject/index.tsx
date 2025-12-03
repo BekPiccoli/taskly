@@ -17,8 +17,8 @@ import {
 
 interface subjectModalProps {
   currentData?: Subject;
-  modalIsOpen: Boolean;
-  setModalIsOpen: (value: Boolean) => void;
+  modalIsOpen: boolean;
+  setModalIsOpen: (value: boolean) => void;
   onSaveSubject: (data: Subject) => void;
 }
 

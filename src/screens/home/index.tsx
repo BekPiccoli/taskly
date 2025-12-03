@@ -17,26 +17,27 @@ import { Button } from "@src/components/buttons/button";
 import { Header } from "@src/components/header";
 import { SubjectCard } from "@src/components/subjectCard";
 import { notifyTasksDueToday } from "@src/functions/notification";
-import React, { useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Modal,
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
   useColorScheme,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 const Home: React.FC = () => {
-  const [modalIsOpen, setModalIsOpen] = useState<Boolean>(false);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [subjects, setSubjects] = useState<Array<Subject>>([]);
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
   const [editModal, setEditModal] = useState<any>({});
   const [subjectConfigModalIsOpen, setSubjectConfigModalIsOpen] =
-    useState<Boolean>(false);
+    useState<boolean>(false);
 
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
@@ -312,42 +313,135 @@ const Home: React.FC = () => {
           </ScrollView>
         </View>
       )}
-      {subjectConfigModalIsOpen && (
-        <GestureHandlerRootView>
-          <View className="flex-1 justify-center items-center p-4 border-t-slate-300 dark:border-t-slate-700 dark:bg-gray-700">
-            <Text className="text-lg font-semibold mb-4 dark:text-white">
-              Configurações da Matéria
-            </Text>
-
-            <View className="w-full gap-10">
-              <Button
-                onPress={handleEditSubject}
-                title="Editar Matéria"
-                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-blue-500"
-                icon={<FontAwesome name="edit" size={16} color="#fff" />}
-              />
-
-              <Button
-                onPress={() => {
-                  showAlert("OK", "Cancelar", () =>
-                    handleremoveSubject(selectedSubjectId)
-                  );
+      
+      {/* Modal de Configurações da Matéria */}
+      <Modal
+        visible={subjectConfigModalIsOpen}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => openConfigForSubject()}
+      >
+        <Pressable
+          className="flex-1 bg-black/50"
+          onPress={() => openConfigForSubject()}
+        >
+          <View className="flex-1 justify-end">
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <View
+                className="rounded-t-3xl p-6 pb-8"
+                style={{
+                  backgroundColor: isDarkMode ? "#1F2937" : "#FFFFFF",
                 }}
-                title="Deletar Matéria"
-                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-red-500"
-                icon={<FontAwesome name="trash" size={16} color="#fff" />}
-              />
+              >
+                {/* Header do Modal */}
+                <View className="flex flex-row items-center justify-between mb-6">
+                  <View className="flex-1">
+                    <Text
+                      className="text-xl font-bold"
+                      style={{ color: isDarkMode ? "#FFFFFF" : "#1F2937" }}
+                    >
+                      Configurações da Matéria
+                    </Text>
+                    <Text
+                      className="text-sm mt-1"
+                      style={{
+                        color: isDarkMode
+                          ? "rgba(255, 255, 255, 0.6)"
+                          : "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
+                      Escolha uma opção
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => openConfigForSubject()}
+                    className="w-10 h-10 rounded-full items-center justify-center"
+                    style={{
+                      backgroundColor: isDarkMode
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(0, 0, 0, 0.05)",
+                    }}
+                  >
+                    <FontAwesome
+                      name="close"
+                      size={18}
+                      color={isDarkMode ? "#FFFFFF" : "#1F2937"}
+                    />
+                  </TouchableOpacity>
+                </View>
 
-              <Button
-                onPress={() => openConfigForSubject()}
-                title="Fechar"
-                style="h-12 w-full rounded-lg items-center justify-center flex-row bg-gray-500"
-                icon={<FontAwesome name="close" size={16} color="#fff" />}
-              />
-            </View>
+                {/* Opções */}
+                <View className="gap-3">
+                  {/* Botão Editar */}
+                  <TouchableOpacity
+                    onPress={handleEditSubject}
+                    activeOpacity={0.7}
+                    className="flex flex-row items-center p-4 rounded-xl"
+                    style={{
+                      backgroundColor: isDarkMode ? "#3B82F6" : "#3B82F6",
+                    }}
+                  >
+                    <View
+                      className="w-10 h-10 rounded-lg items-center justify-center mr-4"
+                      style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                    >
+                      <FontAwesome name="edit" size={18} color="#fff" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-bold text-base">
+                        Editar Matéria
+                      </Text>
+                      <Text className="text-white text-xs opacity-80 mt-0.5">
+                        Alterar informações da disciplina
+                      </Text>
+                    </View>
+                    <MaterialIcons
+                      name="chevron-right"
+                      size={24}
+                      color="rgba(255, 255, 255, 0.7)"
+                    />
+                  </TouchableOpacity>
+
+                  {/* Botão Deletar */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      showAlert("OK", "Cancelar", () =>
+                        handleremoveSubject(selectedSubjectId)
+                      );
+                    }}
+                    activeOpacity={0.7}
+                    className="flex flex-row items-center p-4 rounded-xl"
+                    style={{
+                      backgroundColor: isDarkMode ? "#DC2626" : "#EF4444",
+                    }}
+                  >
+                    <View
+                      className="w-10 h-10 rounded-lg items-center justify-center mr-4"
+                      style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                    >
+                      <FontAwesome name="trash" size={18} color="#fff" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-bold text-base">
+                        Deletar Matéria
+                      </Text>
+                      <Text className="text-white text-xs opacity-80 mt-0.5">
+                        Remover permanentemente esta disciplina
+                      </Text>
+                    </View>
+                    <MaterialIcons
+                      name="chevron-right"
+                      size={24}
+                      color="rgba(255, 255, 255, 0.7)"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Pressable>
           </View>
-        </GestureHandlerRootView>
-      )}
+        </Pressable>
+      </Modal>
+
       {modalIsOpen && (
         <SubjectModal
           currentData={editModal}
